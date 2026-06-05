@@ -1882,17 +1882,51 @@
     speak("Hi! I am your reading buddy. Tap any word and I will say it.");
   });
 
-  function speak(text, opts) {
+  function unlockSpeech(){
     if (!synth) return;
+    try {
+      synth.resume();
+      synth.pause();
+      synth.resume();
+    } catch(e){}
+    if (!allVoices.length) buildVoiceList();
+  }
+
+  function pickVoice(){
+    const voices = synth ? synth.getVoices() : [];
+    if (!voices.length) return null;
+    if (chosenVoice && voices.some(v => v.name === chosenVoice.name)) return chosenVoice;
+    const list = voices.filter(isEnglish);
+    const pool = list.length ? list : voices;
+    chosenVoice = pool[defaultVoiceIndex(pool)] || voices[0];
+    return chosenVoice;
+  }
+
+  function speak(text, opts) {
+    if (!synth || !text) return;
     opts = opts || {};
-    const u = new SpeechSynthesisUtterance(text);
-    if (chosenVoice) u.voice = chosenVoice;
-    u.lang = (chosenVoice && chosenVoice.lang) || "en-US";
-    u.rate = (typeof opts.rate === "number") ? opts.rate : baseRate;
-    u.pitch = 1.1; u.volume = 1;
-    if (opts.onstart) u.onstart = opts.onstart;
-    if (opts.onend) u.onend = opts.onend;
-    synth.speak(u);
+    unlockSpeech();
+    const voice = pickVoice();
+
+    function doSpeak(){
+      const u = new SpeechSynthesisUtterance(text);
+      if (voice) u.voice = voice;
+      u.lang = (voice && voice.lang) || "en-US";
+      u.rate = (typeof opts.rate === "number") ? opts.rate : baseRate;
+      u.pitch = 1.1; u.volume = 1;
+      if (opts.onstart) u.onstart = opts.onstart;
+      if (opts.onend) u.onend = opts.onend;
+      if (opts.onerror) u.onerror = opts.onerror;
+      synth.speak(u);
+    }
+
+    // Chrome/Safari: cancel() then immediate speak() drops the utterance — defer slightly
+    if (opts.cancelFirst !== false && (synth.speaking || synth.pending)){
+      synth.cancel();
+      setTimeout(doSpeak, 60);
+    } else {
+      doSpeak();
+    }
   }
 
   function cleanWord(w){ return w.replace(/[^a-zA-Z'-]/g, ""); }
@@ -1921,7 +1955,10 @@
       const spoken = cleanWord(tok);
       if (spoken) { span.dataset.color = COLORS[colorIndex % COLORS.length]; colorIndex++; }
       applyColor(span);
-      span.addEventListener("click", () => onWordTap(span, spoken));
+      span.addEventListener("pointerdown", (e)=>{
+        e.preventDefault();
+        onWordTap(span, spoken);
+      });
       passageEl.appendChild(span);
     });
     passageEl.scrollIntoView({behavior:"smooth", block:"start"});
@@ -1936,14 +1973,18 @@
   // ---------- Tap a word ----------
   function onWordTap(span, spoken) {
     if (!spoken) return;
-    if (synth) synth.cancel();
+    unlockSpeech();
     clearSpeaking();
     span.classList.add("speaking");
     span.classList.remove("pop"); void span.offsetWidth; span.classList.add("pop");
     speak(spoken, { onend: () => span.classList.remove("speaking") });
     setTimeout(() => span.classList.remove("speaking"), 2500);
     const key = spoken.toLowerCase();
-    if (!tappedWords.has(key)) { tappedWords.add(key); onWordEarn(key); updateStars(); }
+    if (!tappedWords.has(key)){
+      tappedWords.add(key);
+      // defer coin sounds so they don't interrupt speech on mobile
+      setTimeout(()=>{ onWordEarn(key); updateStars(); }, 150);
+    }
   }
   function clearSpeaking(){ passageEl.querySelectorAll(".word.speaking").forEach(w=>w.classList.remove("speaking")); }
 
@@ -2136,7 +2177,7 @@
 
   // Unlock speech on first gesture
   document.body.addEventListener("pointerdown", function warm(){
-    if (synth){ try{ synth.resume(); }catch(e){} }
+    unlockSpeech();
     ensureAudio();
     document.body.removeEventListener("pointerdown", warm);
   }, { once:true });
@@ -2278,7 +2319,7 @@
       const spoken = cleanWord(tok);
       if (spoken){ span.dataset.color = COLORS[ci % COLORS.length]; ci++; }
       if (colorsOn && span.dataset.color) span.style.color = span.dataset.color;
-      span.addEventListener("click",(e)=>{ e.stopPropagation(); onWordTap(span, spoken); });
+      span.addEventListener("pointerdown",(e)=>{ e.stopPropagation(); e.preventDefault(); onWordTap(span, spoken); });
       frag.appendChild(span);
     });
     return frag;
