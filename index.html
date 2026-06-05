@@ -1,0 +1,2630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Reading Buddy 🐢 — Read, Earn & Shop!</title>
+<style>
+  :root {
+    --bg1: #fff3d6;
+    --bg2: #ffe0ec;
+    --bg3: #d9f5ff;
+    --ink: #34344a;
+    --pop: #ff6b6b;
+    --pop2: #4dabf7;
+    --pop3: #51cf66;
+    --pop4: #ffd43b;
+    --card: #ffffff;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: 'Comic Sans MS', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+    color: var(--ink);
+    background: linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+    background-attachment: fixed;
+  }
+
+  .app {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 18px 16px 60px;
+  }
+
+  header { text-align: center; padding: 10px 0 4px; }
+  h1 {
+    font-size: clamp(28px, 7vw, 46px);
+    margin: 6px 0 2px;
+    color: var(--pop);
+    text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.06);
+    letter-spacing: 1px;
+  }
+  .subtitle {
+    font-size: clamp(14px, 3.5vw, 18px);
+    color: #7a6f8a;
+    margin: 0 0 10px;
+    font-weight: bold;
+  }
+
+  /* ---------- Input panel ---------- */
+  .input-panel {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+    margin-bottom: 18px;
+  }
+  .input-panel textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: vertical;
+    border: 3px dashed #c7c2d6;
+    border-radius: 16px;
+    padding: 12px 14px;
+    font: inherit;
+    font-size: 17px;
+    color: var(--ink);
+    background: #fbfaff;
+    outline: none;
+  }
+  .input-panel textarea:focus { border-color: var(--pop2); }
+  .input-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .btn {
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 18px;
+    color: #fff;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.16);
+    transition: transform .12s ease, box-shadow .12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.16); }
+  .btn.go { background: var(--pop3); }
+  .btn.upload { background: var(--pop2); }
+  .btn.sample { background: #9775fa; }
+  .btn.ghost { background:#ffffff; color:var(--ink); box-shadow:0 4px 0 rgba(0,0,0,0.12); }
+
+  /* ---------- Library of 100 scripts ---------- */
+  .library {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 16px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+    margin-bottom: 18px;
+  }
+  .lib-head {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .lib-title {
+    font-size: clamp(18px, 4.5vw, 22px); color: var(--pop2); margin: 0; font-weight: bold;
+  }
+  #libSearch {
+    flex: 1; min-width: 180px;
+    font: inherit; font-size: 15px; padding: 10px 14px;
+    border: 3px solid #d7cffb; border-radius: 16px; background: #fbfaff; outline: none; color: var(--ink);
+  }
+  #libSearch:focus { border-color: var(--pop2); }
+  .lib-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .lib-filter {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 14px;
+    padding: 8px 14px; border-radius: 14px; background: #f1eefb; color: var(--ink);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.10); transition: transform .1s ease, box-shadow .1s ease;
+  }
+  .lib-filter:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.10); }
+  .lib-filter.active { background: var(--pop4); box-shadow: 0 3px 0 #e0ab00; }
+  .lib-count { font-size: 13px; color: #8a7f9a; font-weight: bold; margin-left: auto; align-self: center; }
+
+  .lib-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 4px;
+  }
+  .lib-grid::-webkit-scrollbar { width: 10px; }
+  .lib-grid::-webkit-scrollbar-thumb { background: #d7cffb; border-radius: 8px; }
+
+  .story-btn {
+    border: none; cursor: pointer; font: inherit; text-align: left;
+    padding: 12px; border-radius: 16px; background: #f7f5ff; color: var(--ink);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.08); transition: transform .1s ease, box-shadow .1s ease, background .15s;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .story-btn:hover { background: #efeaff; }
+  .story-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+  .story-btn.active { background: var(--pop4); box-shadow: 0 3px 0 #e0ab00; }
+  .story-btn .s-emoji { font-size: 26px; line-height: 1; }
+  .story-btn .s-title { font-weight: bold; font-size: 14px; line-height: 1.2; }
+  .story-btn .s-level { font-size: 11px; color: #9a8fb0; font-weight: bold; }
+  .lib-empty { grid-column: 1/-1; text-align: center; color: #9a8fb0; font-weight: bold; padding: 20px; }
+
+  /* ---------- Reading card ---------- */
+  .card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 22px 20px 26px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    position: relative;
+  }
+  .story-title {
+    text-align: center;
+    font-size: clamp(18px, 4.5vw, 24px);
+    color: var(--pop2);
+    margin: 0 0 16px;
+  }
+  .passage {
+    font-size: clamp(24px, 6vw, 34px);
+    line-height: 1.95;
+    text-align: center;
+    word-spacing: 2px;
+  }
+
+  /* Tappable word — color comes from inline style (rainbow sequence) */
+  .word {
+    display: inline-block;
+    cursor: pointer;
+    padding: 2px 8px;
+    margin: 4px 1px;
+    border-radius: 12px;
+    font-weight: bold;
+    transition: transform .1s ease, background .15s ease;
+    user-select: none;
+  }
+  .word:hover { background: #fff7c2; }
+  .word.speaking {
+    background: #fffbe6;
+    transform: scale(1.22);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+  .word.pop { animation: pop .35s ease; }
+  @keyframes pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.32); }
+    100% { transform: scale(1); }
+  }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 22px;
+  }
+  .ctrl {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 17px;
+    padding: 14px 22px; border-radius: 20px; color: #fff;
+    box-shadow: 0 5px 0 rgba(0,0,0,0.18);
+    transition: transform .12s ease, box-shadow .12s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .ctrl:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.18); }
+  .ctrl.read { background: var(--pop2); }
+  .ctrl.stop { background: var(--pop); }
+  .ctrl.color { background: #20c997; }
+
+  /* ---------- Page-turner nav ---------- */
+  .nav-bar {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    margin: 4px 0 16px; flex-wrap: wrap;
+  }
+  .nav-btn {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 16px;
+    padding: 12px 18px; border-radius: 18px; color: #fff; background: #748ffc;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.16);
+    transition: transform .12s ease, box-shadow .12s ease, opacity .15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .nav-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.16); }
+  .nav-btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: 0 4px 0 rgba(0,0,0,0.10); }
+  .nav-btn.surprise { background: #f06595; }
+  .nav-pos {
+    font-weight: bold; font-size: 14px; color: #7a6f8a;
+    background: #f1eefb; padding: 8px 14px; border-radius: 14px; min-width: 110px; text-align: center;
+  }
+
+  /* ---------- Voice bar ---------- */
+  .voice-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background: #f6f3ff;
+    border-radius: 18px;
+    padding: 12px 14px;
+    margin: 4px 0 4px;
+  }
+  .voice-field { display: flex; flex-direction: column; gap: 4px; }
+  .voice-field label {
+    font-size: 12px; font-weight: bold; color: #7a6f8a; padding-left: 6px;
+  }
+  .voice-bar select {
+    font: inherit; font-weight: bold; font-size: 15px;
+    padding: 10px 12px; border-radius: 14px;
+    border: 3px solid #d7cffb; background: #fff; color: var(--ink);
+    cursor: pointer; max-width: 320px; outline: none;
+  }
+  .voice-bar select:focus { border-color: var(--pop2); }
+  .btn.test { background:#f59f00; align-self:flex-end; }
+
+  .hint {
+    text-align: center; margin: 18px auto 0; font-size: 15px; color: #8a7f9a; font-weight: bold;
+    background: rgba(255,255,255,0.6); border-radius: 16px; padding: 10px 14px; max-width: 560px;
+  }
+  .star-bar { text-align: center; font-size: 24px; margin-top: 14px; min-height: 30px; letter-spacing: 3px; }
+  .footer { text-align: center; margin-top: 26px; font-size: 13px; color: #9a90aa; }
+  .no-voice {
+    display: none; text-align: center; background: #ffe3e3; color: #c92a2a;
+    border-radius: 16px; padding: 12px; margin: 12px 0; font-weight: bold;
+  }
+  input[type=file]{ display:none; }
+
+  /* ---------- Top tabs ---------- */
+  .tabs {
+    display: flex; gap: 10px; justify-content: center; margin: 6px 0 18px; flex-wrap: wrap;
+  }
+  .tab {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 17px;
+    padding: 12px 24px; border-radius: 20px; background: #ffffff; color: var(--ink);
+    box-shadow: 0 5px 0 rgba(0,0,0,0.12); transition: transform .12s ease, box-shadow .12s ease, background .15s;
+  }
+  .tab:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.12); }
+  .tab.active { background: var(--pop); color: #fff; box-shadow: 0 5px 0 #d64545; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ---------- Talk & Play game ---------- */
+  .scene-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px; margin-top: 6px;
+  }
+  .scene-card {
+    border: none; cursor: pointer; font: inherit; text-align: center;
+    padding: 16px 10px; border-radius: 18px; background: #f7f5ff; color: var(--ink);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.10); transition: transform .12s ease, box-shadow .12s ease, background .15s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .scene-card:hover { background: #efeaff; }
+  .scene-card:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.10); }
+  .scene-card .sc-emoji { font-size: 40px; line-height: 1; }
+  .scene-card .sc-title { font-weight: bold; font-size: 15px; line-height: 1.15; }
+  .scene-card .sc-place { font-size: 12px; color: #9a8fb0; font-weight: bold; }
+
+  /* Stage */
+  .stage { display: none; }
+  .stage.active { display: block; }
+  .stage-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .back-btn {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 15px;
+    padding: 10px 16px; border-radius: 16px; background: #f1eefb; color: var(--ink);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.10);
+  }
+  .back-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.10); }
+  .stage-title { font-size: clamp(18px,4.5vw,24px); color: var(--pop2); margin: 0; font-weight: bold; flex: 1; text-align: center; }
+  .score-pill {
+    font-weight: bold; font-size: 15px; background: var(--pop4); color: #6b4d00;
+    padding: 8px 14px; border-radius: 16px; white-space: nowrap;
+  }
+
+  .actors { display: flex; justify-content: space-around; align-items: flex-end; margin: 4px 0 10px; }
+  .actor { text-align: center; transition: transform .2s ease, filter .2s ease; opacity: .55; }
+  .actor.turn { opacity: 1; transform: scale(1.12); }
+  .actor .av { font-size: clamp(46px,12vw,70px); line-height: 1;
+    filter: drop-shadow(0 6px 6px rgba(0,0,0,0.15)); }
+  .actor.turn .av { animation: talk .5s ease infinite alternate; }
+  @keyframes talk { from { transform: translateY(0); } to { transform: translateY(-6px); } }
+  .actor .nm { font-size: 13px; font-weight: bold; color: #7a6f8a; margin-top: 2px; }
+
+  .mode-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+  .mode-btn {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 15px;
+    padding: 11px 18px; border-radius: 16px; color: #fff; box-shadow: 0 4px 0 rgba(0,0,0,0.16);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .mode-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.16); }
+  .mode-btn.listen { background: var(--pop2); }
+  .mode-btn.myturn { background: #9775fa; }
+  .mode-btn.restart { background: #20c997; }
+
+  .role-pick { text-align:center; background:#f6f3ff; border-radius:16px; padding:12px; margin-bottom:12px; display:none; }
+  .role-pick.show { display:block; }
+  .role-pick p { margin:0 0 8px; font-weight:bold; color:#7a6f8a; }
+  .role-pick button {
+    border:none; cursor:pointer; font:inherit; font-weight:bold; font-size:15px;
+    padding:10px 16px; margin:4px; border-radius:14px; background:#fff; color:var(--ink);
+    box-shadow:0 3px 0 rgba(0,0,0,0.12);
+  }
+  .role-pick button:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,0.12); }
+
+  /* Chat bubbles */
+  .chat { min-height: 120px; padding: 4px; }
+  .bubble-row { display: flex; margin: 10px 0; align-items: flex-end; gap: 8px; opacity: 0; transform: translateY(10px);
+    animation: rise .35s ease forwards; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  .bubble-row.left { justify-content: flex-start; }
+  .bubble-row.right { justify-content: flex-end; flex-direction: row-reverse; }
+  .bubble-av { font-size: 30px; line-height: 1; flex-shrink: 0; }
+  .bubble {
+    max-width: 78%; padding: 12px 16px; border-radius: 20px; font-size: clamp(17px,4.2vw,21px);
+    line-height: 1.7; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.10);
+  }
+  .bubble-row.left .bubble { background: #e7f5ff; border-bottom-left-radius: 6px; }
+  .bubble-row.right .bubble { background: #fff0f6; border-bottom-right-radius: 6px; }
+  .bubble.you { outline: 3px dashed #f783ac; }
+  .bubble .word { font-size: inherit; margin: 2px 1px; }
+  .bubble.speaking-bubble { box-shadow: 0 0 0 4px var(--pop3); }
+
+  .yourline {
+    text-align:center; background:#fff9db; border:3px dashed #ffd43b; border-radius:18px;
+    padding:14px; margin:12px 0; display:none;
+  }
+  .yourline.show { display:block; }
+  .yourline .yl-title { font-weight:bold; color:#b08900; margin-bottom:8px; font-size:16px; }
+  .yourline .yl-text { font-size:clamp(18px,4.5vw,24px); font-weight:bold; line-height:1.7; margin-bottom:10px; }
+  .yourline .yl-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .yourline .yl-btns button {
+    border:none; cursor:pointer; font:inherit; font-weight:bold; font-size:15px;
+    padding:11px 18px; border-radius:14px; color:#fff; box-shadow:0 4px 0 rgba(0,0,0,0.16);
+  }
+  .yourline .yl-btns button:active { transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,0.16); }
+  .yl-hear { background:#4dabf7; }
+  .yl-done { background:#51cf66; }
+  .yl-mic  { background:#e64980; }
+  .yl-mic.listening { background:#c2255c; animation: micpulse .9s ease infinite; }
+  @keyframes micpulse { 0%,100%{ box-shadow:0 4px 0 rgba(0,0,0,0.16);} 50%{ box-shadow:0 4px 0 rgba(0,0,0,0.16), 0 0 0 8px rgba(230,73,128,0.25);} }
+
+  .yl-feedback {
+    margin-top:10px; font-weight:bold; font-size:15px; min-height:22px; line-height:1.4;
+  }
+  .yl-feedback .heard { color:#7a6f8a; font-style:italic; }
+  .yl-feedback.good { color:#2f9e44; }
+  .yl-feedback.close { color:#e8590c; }
+  .yl-feedback.miss { color:#c92a2a; }
+
+  /* completed badge on scene cards */
+  .scene-card { position: relative; }
+  .scene-card .sc-done {
+    position:absolute; top:8px; right:8px; font-size:18px;
+    background:#51cf66; color:#fff; width:26px; height:26px; border-radius:50%;
+    display:none; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.2);
+  }
+  .scene-card.done .sc-done { display:flex; }
+  .scene-card.done { background:#ebfbee; }
+
+  /* progress bar in talk header */
+  .progress-bar {
+    display:flex; align-items:center; gap:10px; justify-content:center; flex-wrap:wrap;
+    background:#f6f3ff; border-radius:16px; padding:10px 14px; margin:4px 0 12px;
+    font-weight:bold; color:#7a6f8a; font-size:14px;
+  }
+  .progress-bar .pb-track { flex:1; min-width:120px; height:14px; background:#e3dcfb; border-radius:8px; overflow:hidden; }
+  .progress-bar .pb-fill { height:100%; width:0%; background:linear-gradient(90deg,#51cf66,#20c997); transition:width .4s ease; }
+  .reset-prog {
+    border:none; cursor:pointer; font:inherit; font-weight:bold; font-size:13px;
+    padding:7px 12px; border-radius:12px; background:#fff; color:#c92a2a; box-shadow:0 2px 0 rgba(0,0,0,0.10);
+  }
+  .reset-prog:active { transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,0.10); }
+
+  .win-banner {
+    display:none; text-align:center; background:linear-gradient(135deg,#fff3bf,#ffd8a8);
+    border-radius:20px; padding:18px; margin-top:14px; font-weight:bold; font-size:18px; color:#6b4d00;
+  }
+  .win-banner.show { display:block; animation: pop .4s ease; }
+
+  /* Confetti */
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+
+  /* ---------- Wallet / gamification HUD ---------- */
+  .wallet-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: stretch;
+    background: linear-gradient(135deg, #fff9db, #ffe8cc);
+    border: 3px solid #ffd43b; border-radius: 22px; padding: 12px 14px; margin-bottom: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+  }
+  .wallet-stat {
+    display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 16px;
+    padding: 8px 14px; font-weight: bold; font-size: 15px; box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+    min-width: 100px;
+  }
+  .wallet-stat .ws-icon { font-size: 22px; line-height: 1; }
+  .wallet-stat .ws-val { color: var(--ink); }
+  .wallet-stat.coins { position: relative; }
+  .wallet-stat.coins .ws-val { color: #e67700; transition: transform .2s ease; }
+  .wallet-stat.coins.bump .ws-val { animation: coinbump .35s ease; }
+  @keyframes coinbump { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.35); color: #f59f00; } }
+
+  .piggy-bank {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #fff0f6; border-radius: 16px; padding: 6px 12px; min-width: 72px;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.08); cursor: default; position: relative; overflow: visible;
+  }
+  .piggy-bank .piggy-emoji {
+    font-size: 36px; line-height: 1; transition: transform .15s ease;
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.12));
+  }
+  .piggy-bank .piggy-label { font-size: 10px; font-weight: bold; color: #c2255c; margin-top: 2px; }
+  .piggy-bank.shake .piggy-emoji { animation: piggyshake .5s ease; }
+  .piggy-bank.glow { background: #fff9db; box-shadow: 0 0 0 3px #ffd43b, 0 3px 0 rgba(0,0,0,0.08); }
+  @keyframes piggyshake {
+    0%,100%{ transform: rotate(0) scale(1); }
+    15%{ transform: rotate(-12deg) scale(1.1); }
+    30%{ transform: rotate(10deg) scale(1.15); }
+    45%{ transform: rotate(-8deg) scale(1.1); }
+    60%{ transform: rotate(6deg) scale(1.05); }
+    75%{ transform: rotate(-4deg) scale(1); }
+  }
+
+  .fly-coin {
+    position: fixed; z-index: 65; font-size: 22px; pointer-events: none;
+    animation: flytopiggy .7s ease-in forwards;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+  @keyframes flytopiggy {
+    0% { opacity: 1; transform: scale(1) translate(0, 0); }
+    70% { opacity: 1; }
+    100% { opacity: 0; transform: scale(0.4) translate(var(--tx), var(--ty)); }
+  }
+  .wallet-stat.gems .ws-val { color: #7048e8; }
+  .wallet-stat.streak .ws-val { color: #c92a2a; }
+  .wallet-stat.level .ws-val { color: #1c7ed6; }
+  .wallet-pet {
+    display: flex; align-items: center; gap: 8px; background: #ebfbee; border-radius: 16px;
+    padding: 8px 14px; font-weight: bold; font-size: 14px; flex: 1; min-width: 180px;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+  }
+  .wallet-pet.sad { background: #ffe3e3; }
+  .wallet-pet .pet-emoji { font-size: 32px; animation: bounce 2s ease infinite; }
+  @keyframes bounce { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-4px); } }
+
+  /* Coin float animation */
+  .coin-pop {
+    position: fixed; z-index: 60; font-weight: bold; font-size: 20px; color: #e67700;
+    pointer-events: none; animation: coinfly 1.2s ease forwards;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  @keyframes coinfly {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1.3); }
+  }
+
+  /* Toast compliments */
+  .toast-wrap {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 55;
+    display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: min(92vw, 420px);
+  }
+  .toast {
+    background: linear-gradient(135deg, #51cf66, #20c997); color: #fff; font-weight: bold;
+    font-size: 15px; padding: 14px 18px; border-radius: 18px; text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: toastin .35s ease, toastout .4s ease 2.6s forwards;
+  }
+  .toast.warn { background: linear-gradient(135deg, #ff922b, #fd7e14); }
+  .toast.prize { background: linear-gradient(135deg, #9775fa, #7048e8); }
+  @keyframes toastin { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes toastout { to { opacity: 0; transform: translateY(-10px); } }
+
+  /* Penalty modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 70;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: 24px; padding: 24px; max-width: 400px; width: 100%;
+    text-align: center; box-shadow: 0 16px 40px rgba(0,0,0,0.2); animation: pop .35s ease;
+  }
+  .modal-box h3 { margin: 0 0 10px; font-size: 22px; color: var(--pop); }
+  .modal-box p { margin: 0 0 16px; font-size: 16px; line-height: 1.5; color: #5c5c7a; }
+  .modal-box .modal-btn {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 16px;
+    padding: 12px 24px; border-radius: 16px; background: var(--pop3); color: #fff;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.16);
+  }
+  .modal-box .modal-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.16); }
+  .modal-box.wide { max-width: 520px; text-align: left; }
+  .modal-box .modal-btn.secondary { background: #868e96; margin-top: 8px; }
+  .modal-box .modal-btn.danger { background: var(--pop); }
+
+  /* Parent settings */
+  .parent-gate { text-align: center; }
+  .parent-gate input {
+    font: inherit; font-size: 22px; font-weight: bold; text-align: center;
+    width: 120px; padding: 10px; border: 3px solid #d7cffb; border-radius: 14px; margin: 10px 0;
+  }
+  .parent-settings .ps-row {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 2px dashed #eee;
+  }
+  .parent-settings .ps-row:last-child { border-bottom: none; }
+  .parent-settings label { font-weight: bold; font-size: 14px; color: var(--ink); flex: 1; min-width: 160px; }
+  .parent-settings label small { display: block; font-weight: normal; color: #868e96; font-size: 12px; margin-top: 2px; }
+  .parent-settings input[type=range] { flex: 1; min-width: 120px; accent-color: var(--pop2); }
+  .parent-settings .ps-val { font-weight: bold; min-width: 48px; text-align: right; color: var(--pop2); }
+  .parent-settings select {
+    font: inherit; font-weight: bold; padding: 8px 12px; border-radius: 12px;
+    border: 3px solid #d7cffb; background: #fff;
+  }
+  .parent-settings .ps-toggle {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .parent-settings .ps-toggle input { width: 20px; height: 20px; accent-color: var(--pop3); }
+  .parent-btn {
+    border: none; cursor: pointer; background: none; font: inherit;
+    font-size: 12px; color: #adb5bd; text-decoration: underline; padding: 4px;
+  }
+  .parent-btn:hover { color: #868e96; }
+
+  /* Shop & trophies */
+  .shop-header {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .shop-balance {
+    font-weight: bold; font-size: 18px; color: #e67700; background: #fff9db;
+    padding: 10px 16px; border-radius: 16px; border: 2px solid #ffd43b;
+  }
+  .shop-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .shop-filter {
+    border: none; cursor: pointer; font: inherit; font-weight: bold; font-size: 14px;
+    padding: 9px 14px; border-radius: 14px; background: #f1eefb; color: var(--ink);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.10);
+  }
+  .shop-filter.active { background: var(--pop4); box-shadow: 0 3px 0 #e0ab00; }
+  .shop-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 12px; max-height: 520px; overflow-y: auto; padding: 4px;
+  }
+  .shop-item {
+    border: none; cursor: pointer; font: inherit; text-align: center;
+    padding: 14px 10px; border-radius: 18px; background: #f7f5ff; color: var(--ink);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.10); transition: transform .12s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative;
+  }
+  .shop-item:hover:not(.owned):not(.locked) { background: #efeaff; }
+  .shop-item:active:not(.owned) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.10); }
+  .shop-item .si-emoji { font-size: 42px; line-height: 1; }
+  .shop-item .si-name { font-weight: bold; font-size: 13px; line-height: 1.2; }
+  .shop-item .si-price { font-size: 14px; font-weight: bold; color: #e67700; }
+  .shop-item .si-rarity {
+    font-size: 10px; font-weight: bold; padding: 3px 8px; border-radius: 8px; text-transform: uppercase;
+  }
+  .shop-item.r-common .si-rarity { background: #e9ecef; color: #495057; }
+  .shop-item.r-rare .si-rarity { background: #d0ebff; color: #1864ab; }
+  .shop-item.r-epic .si-rarity { background: #e5dbff; color: #5f3dc4; }
+  .shop-item.r-legend .si-rarity { background: linear-gradient(90deg,#fff3bf,#ffd8a8); color: #6b4d00; }
+  .shop-item.owned { background: #ebfbee; cursor: default; }
+  .shop-item.owned::after {
+    content: "✓ Owned"; position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: bold;
+    background: #51cf66; color: #fff; padding: 3px 7px; border-radius: 8px;
+  }
+  .shop-item.equipped { outline: 3px solid var(--pop4); }
+  .shop-item.locked { opacity: .55; cursor: not-allowed; }
+  .shop-item.locked .si-price { color: #c92a2a; }
+  .shop-hint {
+    text-align: center; font-size: 14px; color: #8a7f9a; font-weight: bold;
+    background: #f6f3ff; border-radius: 14px; padding: 10px; margin-bottom: 12px;
+  }
+
+  .trophy-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px;
+  }
+  .badge-card {
+    text-align: center; padding: 14px 10px; border-radius: 18px; background: #f1f3f5;
+    color: #adb5bd; box-shadow: 0 3px 0 rgba(0,0,0,0.06);
+  }
+  .badge-card.earned {
+    background: linear-gradient(135deg, #fff9db, #ffe8cc); color: var(--ink);
+    box-shadow: 0 4px 0 #e0ab00; animation: pop .4s ease;
+  }
+  .badge-card .bdg-emoji { font-size: 36px; display: block; margin-bottom: 6px; filter: grayscale(1); }
+  .badge-card.earned .bdg-emoji { filter: none; }
+  .badge-card .bdg-name { font-weight: bold; font-size: 13px; }
+  .badge-card .bdg-desc { font-size: 11px; margin-top: 4px; color: #868e96; }
+  .badge-card.earned .bdg-desc { color: #6b4d00; }
+
+  .equip-row {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 14px 0;
+    background: #f6f3ff; border-radius: 16px; padding: 14px;
+  }
+  .equip-chip {
+    display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 14px;
+    padding: 10px 14px; font-weight: bold; font-size: 14px; box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+  }
+  .equip-chip .ec-emoji { font-size: 28px; }
+
+  body.theme-ocean { --bg1: #d0ebff; --bg2: #a5d8ff; --bg3: #74c0fc; }
+  body.theme-forest { --bg1: #d3f9d8; --bg2: #b2f2bb; --bg3: #8ce99a; }
+  body.theme-sunset { --bg1: #ffe8cc; --bg2: #ffc9c9; --bg3: #ffa8a8; }
+  body.theme-space { --bg1: #1e1b4b; --bg2: #312e81; --bg3: #4338ca; color: #e0e7ff; }
+  body.theme-space .card, body.theme-space .library, body.theme-space .input-panel { color: var(--ink); }
+  body.theme-candy { --bg1: #fff0f6; --bg2: #ffdeeb; --bg3: #fcc2d7; }
+  body.theme-gold { --bg1: #fff9db; --bg2: #ffe066; --bg3: #fab005; }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1 id="appTitle">🐢 Reading Buddy</h1>
+      <p class="subtitle">Read, play, earn coins &amp; buy awesome treasures! 🪙🏆</p>
+    </header>
+
+    <!-- WALLET HUD -->
+    <div class="wallet-bar" id="walletBar">
+      <div class="piggy-bank" id="piggyBank" title="Your coin savings!">
+        <span class="piggy-emoji" id="piggyEmoji">🐷</span>
+        <span class="piggy-label">Piggy Bank</span>
+      </div>
+      <div class="wallet-stat coins" id="coinStat"><span class="ws-icon">🪙</span><span class="ws-val" id="coinVal">0</span></div>
+      <div class="wallet-stat gems"><span class="ws-icon">💎</span><span class="ws-val" id="gemVal">0</span></div>
+      <div class="wallet-stat streak"><span class="ws-icon">🔥</span><span class="ws-val" id="streakVal">0</span></div>
+      <div class="wallet-stat level"><span class="ws-icon">⭐</span><span class="ws-val" id="levelVal">Lv 1</span></div>
+      <div class="wallet-pet" id="petBox">
+        <span class="pet-emoji" id="petEmoji">🐢</span>
+        <span id="petMsg">Happy &amp; ready to read!</span>
+      </div>
+    </div>
+
+    <!-- TAB SWITCHER -->
+    <div class="tabs">
+      <button class="tab active" id="tabRead">📖 Read</button>
+      <button class="tab" id="tabTalk">🎮 Play</button>
+      <button class="tab" id="tabShop">🏪 Shop</button>
+      <button class="tab" id="tabTrophy">🏆 Trophies</button>
+    </div>
+
+    <!-- ================= READING VIEW ================= -->
+    <div class="view active" id="viewRead">
+
+    <!-- LIBRARY OF 100 SCRIPTS -->
+    <div class="library">
+      <div class="lib-head">
+        <h2 class="lib-title">📚 Reading Library — 100 Stories</h2>
+        <input type="text" id="libSearch" placeholder="🔍 Search stories..." />
+      </div>
+      <div class="lib-filters" id="libFilters"></div>
+      <div class="lib-grid" id="libGrid"></div>
+    </div>
+
+    <!-- INPUT PANEL -->
+    <div class="input-panel">
+      <textarea id="userText" placeholder="✍️ Or paste / type your own English paragraph here..."></textarea>
+      <div class="input-row">
+        <button class="btn go" id="loadText">✨ Make It Readable</button>
+        <button class="btn upload" id="uploadBtn">📂 Upload .txt</button>
+        <input type="file" id="fileInput" accept=".txt,text/plain" />
+        <button class="btn ghost" id="clearText">🧹 Clear</button>
+      </div>
+    </div>
+
+    <div class="no-voice" id="noVoice">
+      😢 Your browser can't talk right now. Try Chrome, Edge, or Safari!
+    </div>
+
+    <!-- READING CARD -->
+    <div class="card">
+      <h2 class="story-title" id="storyTitle">Your Reading</h2>
+
+      <!-- PAGE TURNER -->
+      <div class="nav-bar">
+        <button class="nav-btn" id="prevBtn">◀️ Previous</button>
+        <span class="nav-pos" id="navPos">1 / 100</span>
+        <button class="nav-btn" id="nextBtn">Next ▶️</button>
+        <button class="nav-btn surprise" id="surpriseBtn">🎲 Surprise me!</button>
+      </div>
+
+      <div class="passage" id="passage"></div>
+
+      <!-- VOICE PICKER -->
+      <div class="voice-bar">
+        <div class="voice-field">
+          <label for="voiceSelect">🔊 Voice</label>
+          <select id="voiceSelect"><option>Loading voices…</option></select>
+        </div>
+        <div class="voice-field">
+          <label for="speedSelect">⏱️ Speed</label>
+          <select id="speedSelect">
+            <option value="0.5">🐌 Very slow</option>
+            <option value="0.7">🐢 Slow</option>
+            <option value="0.9" selected>🙂 Normal</option>
+          </select>
+        </div>
+        <button class="btn test" id="testBtn">🎧 Test sound</button>
+      </div>
+
+      <div class="controls">
+        <button class="ctrl read" id="readAll">▶️ Read All</button>
+        <button class="ctrl color" id="colorToggle">🌈 Colors: On</button>
+        <button class="ctrl stop" id="stopBtn">⏹️ Stop</button>
+      </div>
+
+      <div class="star-bar" id="starBar"></div>
+      <p class="hint">👆 Tap words to hear them &amp; earn 🪙 coins! Finish all words for bonus treasure! Tap "Read All" for extra coins!<br>
+      📅 Read every day to keep your 🔥 streak, pet happy, and coins safe — skip a day and coins fade away!</p>
+    </div>
+
+    </div><!-- /viewRead -->
+
+    <!-- ================= TALK & PLAY VIEW ================= -->
+    <div class="view" id="viewTalk">
+
+      <!-- Scene picker -->
+      <div class="library" id="scenePicker">
+        <div class="lib-head">
+          <h2 class="lib-title">🎮 Talk &amp; Play — Spoken English Games</h2>
+        </div>
+        <div class="progress-bar">
+          <span id="progLabel">⭐ 0 stars · ✓ 0/20 scenes</span>
+          <div class="pb-track"><div class="pb-fill" id="progFill"></div></div>
+          <button class="reset-prog" id="resetProg">🗑️ Reset</button>
+        </div>
+        <p class="hint" style="margin-top:0">Pick a place, then play! 🎧 <b>Listen</b> or take <b>🙋 Your Turn</b> — say lines into the <b>🎤 mic</b> to win ⭐ stars, 🪙 coins &amp; 🏆 badges! Visit the <b>🏪 Shop</b> to spend your treasure!</p>
+        <div class="scene-grid" id="sceneGrid"></div>
+      </div>
+
+      <!-- Stage -->
+      <div class="card stage" id="stage">
+        <div class="stage-head">
+          <button class="back-btn" id="backBtn">⬅️ Scenes</button>
+          <h2 class="stage-title" id="stageTitle">Scene</h2>
+          <span class="score-pill" id="scorePill">⭐ 0</span>
+        </div>
+
+        <div class="actors">
+          <div class="actor" id="actorA"><div class="av" id="avA">🙂</div><div class="nm" id="nmA">A</div></div>
+          <div class="actor" id="actorB"><div class="av" id="avB">🙂</div><div class="nm" id="nmB">B</div></div>
+        </div>
+
+        <div class="mode-row">
+          <button class="mode-btn listen" id="playBtn">🎧 Listen to Chat</button>
+          <button class="mode-btn myturn" id="turnBtn">🙋 Your Turn (Play!)</button>
+          <button class="mode-btn restart" id="restartBtn">🔄 Restart</button>
+        </div>
+
+        <div class="role-pick" id="rolePick">
+          <p>Which character do you want to be?</p>
+          <div id="roleBtns"></div>
+        </div>
+
+        <div class="chat" id="chat"></div>
+
+        <div class="yourline" id="yourLine">
+          <div class="yl-title">🙋 Your line — say it out loud!</div>
+          <div class="yl-text" id="ylText"></div>
+          <div class="yl-btns">
+            <button class="yl-hear" id="ylHear">🔊 Hear it</button>
+            <button class="yl-mic" id="ylMic">🎤 Say it</button>
+            <button class="yl-done" id="ylDone">✅ Skip / I said it</button>
+          </div>
+          <div class="yl-feedback" id="ylFeedback"></div>
+        </div>
+
+        <div class="win-banner" id="winBanner"></div>
+      </div>
+
+    </div><!-- /viewTalk -->
+
+    <!-- ================= TREASURE SHOP ================= -->
+    <div class="view" id="viewShop">
+      <div class="library">
+        <div class="shop-header">
+          <h2 class="lib-title">🏪 Mega Treasure Shop</h2>
+          <div class="shop-balance" id="shopBalance">🪙 0 coins</div>
+        </div>
+        <p class="shop-hint">💡 Read stories &amp; play games to earn coins! Bigger prizes cost more — save up for legendary treasures! 👑</p>
+        <div class="shop-filters" id="shopFilters"></div>
+        <div class="shop-grid" id="shopGrid"></div>
+      </div>
+    </div>
+
+    <!-- ================= TROPHIES & BADGES ================= -->
+    <div class="view" id="viewTrophy">
+      <div class="library">
+        <h2 class="lib-title">🏆 Your Trophies &amp; Badges</h2>
+        <div class="equip-row" id="equipRow"></div>
+        <p class="shop-hint" id="badgeCount">0 badges earned — keep reading to unlock them all!</p>
+        <div class="trophy-grid" id="badgeGrid"></div>
+      </div>
+    </div>
+
+    <p class="footer">Made for little readers 💛 — read every day to keep your coins &amp; pet happy!<br>
+    <button type="button" class="parent-btn" id="parentBtn">🔒 Parent settings</button></p>
+  </div>
+  <div class="toast-wrap" id="toastWrap"></div>
+  <div class="modal-overlay" id="parentModal">
+    <div class="modal-box" id="parentGateBox">
+      <h3>🔒 Parents only</h3>
+      <p class="parent-gate">What is <b id="gateQuestion">3 × 4</b>?</p>
+      <input type="number" id="gateAnswer" inputmode="numeric" placeholder="?" />
+      <button class="modal-btn" id="gateSubmit">Unlock settings</button>
+    </div>
+    <div class="modal-box wide parent-settings" id="parentSettingsBox" style="display:none">
+      <h3>⚙️ Parent Settings</h3>
+      <p style="text-align:center;color:#868e96;font-size:14px;margin:0 0 14px">Tune rewards &amp; penalties for your child</p>
+      <div class="ps-row">
+        <label>Preset<small>Quick reward/penalty levels</small></label>
+        <select id="psPreset">
+          <option value="easy">Easy (more coins, soft penalties)</option>
+          <option value="normal" selected>Normal</option>
+          <option value="strict">Strict (fewer coins, tougher penalties)</option>
+        </select>
+      </div>
+      <div class="ps-row ps-toggle">
+        <label>Sound effects<small>Coin drops &amp; celebration sounds</small></label>
+        <input type="checkbox" id="psSound" checked />
+      </div>
+      <div class="ps-row ps-toggle">
+        <label>Missed-day penalties<small>Reduce coins when child skips reading</small></label>
+        <input type="checkbox" id="psPenalties" checked />
+      </div>
+      <div class="ps-row">
+        <label>Reward multiplier<small>All coin earnings</small></label>
+        <input type="range" id="psRewardMult" min="0.5" max="3" step="0.1" value="1" />
+        <span class="ps-val" id="psRewardMultVal">1×</span>
+      </div>
+      <div class="ps-row">
+        <label>Word tap coins</label>
+        <input type="range" id="psCoinWord" min="1" max="10" step="1" value="3" />
+        <span class="ps-val" id="psCoinWordVal">3</span>
+      </div>
+      <div class="ps-row">
+        <label>Scene complete coins</label>
+        <input type="range" id="psCoinScene" min="10" max="80" step="5" value="35" />
+        <span class="ps-val" id="psCoinSceneVal">35</span>
+      </div>
+      <div class="ps-row">
+        <label>Daily bonus (base)</label>
+        <input type="range" id="psDailyBase" min="5" max="50" step="5" value="15" />
+        <span class="ps-val" id="psDailyBaseVal">15</span>
+      </div>
+      <div class="ps-row">
+        <label>Penalty per missed day<small>% of coins lost</small></label>
+        <input type="range" id="psPenaltyPct" min="0" max="20" step="1" value="8" />
+        <span class="ps-val" id="psPenaltyPctVal">8%</span>
+      </div>
+      <div class="ps-row">
+        <label>Max penalty per day</label>
+        <input type="range" id="psPenaltyMax" min="5" max="80" step="5" value="40" />
+        <span class="ps-val" id="psPenaltyMaxVal">40</span>
+      </div>
+      <button class="modal-btn" id="psSave">💾 Save settings</button>
+      <button class="modal-btn secondary" id="psClose">Close</button>
+      <button class="modal-btn danger" id="psResetWallet">🗑️ Reset child wallet</button>
+    </div>
+  </div>
+  <div class="modal-overlay" id="penaltyModal">
+    <div class="modal-box">
+      <h3 id="penaltyTitle">😢 Your pet missed you!</h3>
+      <p id="penaltyText"></p>
+      <button class="modal-btn" id="penaltyOk">📖 Let's read now!</button>
+    </div>
+  </div>
+  <canvas id="confetti"></canvas>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Library of 100 reading scripts ----------
+  const LIBRARY = [
+    {e:"🐱",t:"The Cat",l:"Starter",x:"The cat is fat. The cat sat on a mat. The cat is happy. The cat naps all day."},
+    {e:"🐶",t:"The Dog",l:"Starter",x:"The dog can run. The dog is big. The dog has a ball. The dog likes to play."},
+    {e:"☀️",t:"The Sun",l:"Starter",x:"The sun is up. The sun is hot. The sky is blue. It is a fun day."},
+    {e:"🐟",t:"The Fish",l:"Starter",x:"A fish can swim. The fish is red. It lives in a pond. The fish is fast."},
+    {e:"🐝",t:"The Bee",l:"Starter",x:"A bee can buzz. The bee is small. It sits on a flower. The bee likes the sun."},
+    {e:"🚌",t:"The Bus",l:"Starter",x:"The bus is big. The bus is red. I ride the bus. The bus stops here."},
+    {e:"🍎",t:"The Apple",l:"Starter",x:"The apple is red. I bite the apple. It is sweet. I like to eat it."},
+    {e:"🐸",t:"The Frog",l:"Starter",x:"A frog can hop. The frog is green. It sits on a log. Hop, hop, hop!"},
+    {e:"🌙",t:"The Moon",l:"Starter",x:"The moon is up. The moon is white. The sky is dark. Time for bed now."},
+    {e:"🐭",t:"The Mouse",l:"Starter",x:"A mouse is small. The mouse can run. It likes cheese. Run, little mouse!"},
+    {e:"🎈",t:"The Balloon",l:"Starter",x:"I have a balloon. It is red and big. It goes up high. Up, up, up it goes!"},
+    {e:"🐮",t:"The Cow",l:"Starter",x:"The cow is big. The cow says moo. It eats green grass. The cow is on the farm."},
+    {e:"🍦",t:"Ice Cream",l:"Starter",x:"I like ice cream. It is cold and sweet. I lick it fast. Yum, yum, yum!"},
+    {e:"🐤",t:"The Chick",l:"Starter",x:"A chick is small. The chick says peep. It is soft and yellow. I love the chick."},
+    {e:"🚗",t:"The Car",l:"Starter",x:"The car is fast. The car is blue. We go for a ride. Beep, beep, beep!"},
+    {e:"🌈",t:"The Rainbow",l:"Starter",x:"I see a rainbow. It has many colors. Red, blue, and green. It is so pretty!"},
+    {e:"🐷",t:"The Pig",l:"Starter",x:"The pig is pink. The pig says oink. It rolls in the mud. The pig is happy."},
+    {e:"🐰",t:"The Bunny",l:"Starter",x:"A bunny can hop. The bunny is soft. It has long ears. The bunny eats a carrot."},
+    {e:"⭐",t:"The Star",l:"Starter",x:"I see a star. It is up in the sky. The star is bright. Twinkle, little star."},
+    {e:"🍪",t:"The Cookie",l:"Starter",x:"I have a cookie. It is round and brown. I take a bite. The cookie is good!"},
+    {e:"🐢",t:"The Turtle",l:"Starter",x:"A turtle is slow. The turtle has a shell. It walks on the path. Go, slow turtle, go."},
+    {e:"🌳",t:"The Tree",l:"Starter",x:"The tree is big. The tree is green. Birds sit in the tree. I love my tree."},
+    {e:"🦆",t:"The Duck",l:"Starter",x:"A duck can swim. The duck says quack. It likes the water. Splash, splash, splash!"},
+    {e:"🎁",t:"The Gift",l:"Starter",x:"I have a gift. It is in a box. I open it up. Wow, what a nice gift!"},
+    {e:"🐝",t:"The Ant",l:"Starter",x:"An ant is tiny. The ant is busy. It picks up a crumb. The ant works all day."},
+    {e:"🏡",t:"My Home",l:"Easy",x:"I live in a house. My home is warm and cozy. We have a red door. I love my home very much."},
+    {e:"👪",t:"My Family",l:"Easy",x:"I have a big family. We have mom and dad. I have one sister too. We all play together."},
+    {e:"🐕",t:"Walking the Dog",l:"Easy",x:"Every day I walk my dog. We go to the green park. My dog runs and jumps. Then we walk back home."},
+    {e:"🌧️",t:"A Rainy Day",l:"Easy",x:"Today it is raining. I put on my boots. I jump in the puddles. Splash goes the water!"},
+    {e:"🍓",t:"Picking Berries",l:"Easy",x:"We go to pick berries. The berries are red and sweet. I fill up my basket. Mom will make a pie."},
+    {e:"🎨",t:"I Like to Paint",l:"Easy",x:"I love to paint pictures. I use red and blue. I paint a big sun. My picture looks great!"},
+    {e:"🏖️",t:"At the Beach",l:"Easy",x:"We go to the beach. I build a sand castle. The waves are big. I have so much fun."},
+    {e:"🦋",t:"The Butterfly",l:"Easy",x:"A butterfly flies by. It has pretty wings. The wings are orange and black. It lands on a flower."},
+    {e:"🥪",t:"My Lunch",l:"Easy",x:"I am hungry now. I eat my lunch. I have a sandwich and milk. Lunch is yummy!"},
+    {e:"🚲",t:"Riding My Bike",l:"Easy",x:"I have a new bike. It is shiny and red. I ride it fast. The wind is in my hair."},
+    {e:"🐦",t:"The Little Bird",l:"Easy",x:"A little bird sings. It sits in a tree. The song is sweet. I like to hear it sing."},
+    {e:"🌻",t:"The Sunflower",l:"Easy",x:"The sunflower is tall. It is bright yellow. It looks at the sun. Bees love the sunflower."},
+    {e:"⛄",t:"The Snowman",l:"Easy",x:"We make a snowman. He has a carrot nose. We give him a hat. Our snowman is the best!"},
+    {e:"🐠",t:"Fish in the Sea",l:"Easy",x:"Many fish swim in the sea. They are red and blue. They swim very fast. The sea is their home."},
+    {e:"🎂",t:"The Birthday",l:"Easy",x:"Today is my birthday. I am six years old. We have a big cake. My friends come to play."},
+    {e:"🍂",t:"Fall Leaves",l:"Easy",x:"The leaves are falling. They are red and gold. I jump in the pile. The leaves go up high."},
+    {e:"🐘",t:"The Big Elephant",l:"Easy",x:"The elephant is huge. It has a long trunk. It has big ears too. The elephant drinks water."},
+    {e:"📚",t:"Reading Time",l:"Easy",x:"I love to read books. I read every night. I learn new words. Books are so much fun."},
+    {e:"🌊",t:"The Ocean",l:"Easy",x:"The ocean is big and blue. Waves go up and down. I see a boat far away. The ocean is amazing."},
+    {e:"🐧",t:"The Penguin",l:"Easy",x:"A penguin lives in the cold. It cannot fly at all. But it can swim fast. The penguin slides on ice."},
+    {e:"🍕",t:"Pizza Night",l:"Easy",x:"Tonight we eat pizza. It has lots of cheese. I eat two big slices. Pizza night is the best."},
+    {e:"🦉",t:"The Wise Owl",l:"Easy",x:"An owl sits in a tree. It stays awake at night. The owl says hoo, hoo. It has very big eyes."},
+    {e:"🌷",t:"Spring Flowers",l:"Easy",x:"Spring is here at last. The flowers start to grow. They are pink and white. The bees come to play."},
+    {e:"🐑",t:"The Little Lamb",l:"Easy",x:"A little lamb is white. It runs in the field. It stays near its mom. The lamb is very soft."},
+    {e:"🚂",t:"The Train",l:"Easy",x:"The train is very long. It goes choo, choo, choo. It rides on the tracks. The train is fast and loud."},
+    {e:"🦁",t:"The Brave Lion",l:"Growing",x:"The lion is the king of the jungle. He has a big golden mane. When he roars, all the animals listen. But this lion is kind to his friends."},
+    {e:"🌰",t:"The Busy Squirrel",l:"Growing",x:"A little squirrel runs up the tree. She gathers nuts for the winter. She hides them in a safe spot. Now she will have food when it is cold."},
+    {e:"🎪",t:"At the Circus",l:"Growing",x:"We went to the circus today. There were clowns and acrobats. An elephant did funny tricks. Everyone laughed and clapped their hands."},
+    {e:"🧁",t:"Baking Cupcakes",l:"Growing",x:"Mom and I baked cupcakes today. We mixed the flour and sugar. We put them in the oven. Soon the kitchen smelled sweet and warm."},
+    {e:"🐢",t:"The Turtle and the Race",l:"Growing",x:"A slow turtle wanted to race. A fast rabbit laughed at him. But the rabbit took a nap. The slow turtle won the race!"},
+    {e:"🌟",t:"Wishing on a Star",l:"Growing",x:"At night I look up at the sky. I find the brightest star. I close my eyes and make a wish. I wish for a happy day tomorrow."},
+    {e:"🐦",t:"The Bird's Nest",l:"Growing",x:"A mother bird built a cozy nest. She used twigs and soft grass. She laid three little eggs. Soon baby birds will hatch."},
+    {e:"🏰",t:"The Sandcastle",l:"Growing",x:"We built a huge sandcastle at the beach. It had tall towers and a deep moat. We used shells to decorate it. The waves came and washed it away."},
+    {e:"🌽",t:"On the Farm",l:"Growing",x:"The farmer wakes up early each day. He feeds the cows and pigs. He gathers eggs from the hens. There is always work to do on the farm."},
+    {e:"🍯",t:"The Hungry Bear",l:"Growing",x:"A big brown bear was very hungry. He smelled sweet honey nearby. He found a beehive in a tree. The bear ate the honey and felt happy."},
+    {e:"🚀",t:"Trip to Space",l:"Growing",x:"I dream of flying to space. I would wear a white space suit. I would float past the stars. Maybe I would visit the moon."},
+    {e:"🐝",t:"The Garden Helpers",l:"Growing",x:"Bees fly from flower to flower. They carry yellow pollen. This helps the flowers grow. Bees are little helpers in the garden."},
+    {e:"🦊",t:"The Clever Fox",l:"Growing",x:"A clever fox lived in the woods. He had a bright orange tail. He was quick and very smart. He always found a way home."},
+    {e:"🌦️",t:"After the Rain",l:"Growing",x:"The rain stopped this afternoon. The sun came out again. A bright rainbow filled the sky. The whole world looked fresh and clean."},
+    {e:"🐬",t:"The Playful Dolphin",l:"Growing",x:"Dolphins swim in the deep blue sea. They jump high above the waves. They make happy clicking sounds. Dolphins love to play together."},
+    {e:"📮",t:"A Letter to Grandma",l:"Growing",x:"I wrote a letter to my grandma. I told her about my new puppy. I drew a picture for her. I put it in the mailbox."},
+    {e:"🎃",t:"The Pumpkin Patch",l:"Growing",x:"We went to the pumpkin patch. There were pumpkins everywhere. I picked a big round one. We will carve it for fun."},
+    {e:"🦒",t:"The Tall Giraffe",l:"Growing",x:"The giraffe is very tall. It has a long, long neck. It eats leaves from high trees. No other animal is so tall."},
+    {e:"🏕️",t:"Camping Trip",l:"Growing",x:"We set up our tent in the woods. At night we made a campfire. We told stories and sang songs. I saw many stars in the sky."},
+    {e:"🐌",t:"The Slow Snail",l:"Growing",x:"A little snail moves very slowly. He carries his house on his back. He leaves a shiny trail behind. Slow and steady, he gets there."},
+    {e:"🎵",t:"The Music Class",l:"Growing",x:"Today we had music class. We played drums and bells. We sang a happy song. Making music is so much fun."},
+    {e:"🌵",t:"The Desert",l:"Growing",x:"The desert is hot and dry. Cactus plants grow there. They store water inside. Some animals come out at night."},
+    {e:"🐞",t:"The Ladybug",l:"Growing",x:"A red ladybug has black spots. It climbs up a green leaf. It spreads its tiny wings. Then it flies away into the sky."},
+    {e:"🍎",t:"Helping at the Market",l:"Growing",x:"We went to the farmers market. I helped pick fresh fruit. We bought apples and pears. The fruit was crunchy and sweet."},
+    {e:"🌍",t:"Our Planet Earth",l:"Growing",x:"Earth is our home in space. It has land and blue oceans. Many plants and animals live here. We must keep our planet clean."},
+    {e:"🦋",t:"The Caterpillar's Change",l:"Confident",x:"A tiny caterpillar munched on green leaves all day long. One morning, it built a cozy cocoon around itself. Inside, something amazing was happening. Weeks later, a beautiful butterfly came out and spread its colorful wings."},
+    {e:"🌧️",t:"Where Does Rain Come From",l:"Confident",x:"Have you ever wondered where rain comes from? The sun warms the water in lakes and oceans. The water turns into vapor and rises into the sky. There it forms clouds, and soon the rain falls back down."},
+    {e:"🐝",t:"The Honey Makers",l:"Confident",x:"Bees live together in a busy hive. Worker bees fly out to collect sweet nectar from flowers. Back at the hive, they turn the nectar into golden honey. Without bees, we would have far fewer fruits and vegetables."},
+    {e:"🏰",t:"The Kind Princess",l:"Confident",x:"Once upon a time, a kind princess lived in a tall castle. She always shared her food with the hungry villagers. The people loved her gentle heart. When she became queen, the whole kingdom was happy."},
+    {e:"🌳",t:"The Giving Tree",l:"Confident",x:"An old oak tree stood at the edge of the forest. Birds built nests in its strong branches. Children climbed it and rested in its cool shade. The tree gave so much and asked for nothing in return."},
+    {e:"🐬",t:"Friends of the Sea",l:"Confident",x:"Dolphins are some of the smartest animals in the ocean. They talk to each other with clicks and whistles. They work together to find food and stay safe. Sometimes they even help humans who are in trouble."},
+    {e:"🚀",t:"The Young Astronaut",l:"Confident",x:"Maya dreamed of traveling among the stars. She studied hard and learned all about space. One day she climbed aboard a rocket ship. As it blasted off, she smiled, ready for her great adventure."},
+    {e:"🌋",t:"The Sleeping Volcano",l:"Confident",x:"High on a mountain sat a quiet volcano. For many years it slept without a sound. Deep inside, hot melted rock began to bubble. One day it woke up and lit the sky with glowing fire."},
+    {e:"🦉",t:"The Owl Who Couldn't Sleep",l:"Confident",x:"Oliver the owl was different from the others. While they slept all day, he wanted to see the sunshine. He watched the busy daytime world with wide eyes. Oliver learned that being different can be wonderful."},
+    {e:"🌊",t:"The Mighty Ocean",l:"Confident",x:"The ocean covers most of our planet. It is home to whales, fish, and tiny creatures. Its waves crash on the shore again and again. We must protect the ocean and keep it clean for all."},
+    {e:"🐧",t:"The Brave Penguin",l:"Confident",x:"In the freezing cold of the south, penguins huddle close together. The father penguin keeps the egg warm on his feet. He waits patiently through the long, icy winter. At last, a fluffy chick is born."},
+    {e:"🍂",t:"The Four Seasons",l:"Confident",x:"Each year brings four special seasons. In spring, flowers bloom and birds return. Summer is warm and full of sunshine. Then autumn paints the leaves, and winter covers the world in snow."},
+    {e:"🐘",t:"The Elephant Never Forgets",l:"Confident",x:"Elephants are gentle giants of the grasslands. They use their trunks to drink, eat, and hug. They have amazing memories and never forget a friend. A family of elephants always cares for one another."},
+    {e:"🌟",t:"The Boy Who Counted Stars",l:"Confident",x:"Every clear night, Sam lay on the soft grass. He looked up at the endless twinkling sky. He tried to count each shining star. Though he never finished, he loved to dream and wonder."},
+    {e:"🏔️",t:"The Mountain Climber",l:"Confident",x:"Anna wanted to reach the top of the tall mountain. The path was steep and the air was cold. Step by step, she kept on climbing. When she reached the peak, the whole world lay below her."},
+    {e:"🦊",t:"The Fox and the Grapes",l:"Confident",x:"A hungry fox saw juicy grapes hanging high. He jumped and jumped, but could not reach them. After many tries, he gave up and walked away. He said the grapes were probably sour anyway."},
+    {e:"🌻",t:"How Plants Grow",l:"Confident",x:"A tiny seed is planted in the dark soil. With water and warm sunlight, it begins to sprout. Slowly, a green stem reaches toward the sky. In time, it grows into a tall and lovely plant."},
+    {e:"🐢",t:"The Patient Turtle",l:"Confident",x:"Old Mr. Turtle never moved in a hurry. He took his time wherever he went. While others rushed and made mistakes, he stayed calm. Being patient helped him finish everything he started."},
+    {e:"🎻",t:"The Little Musician",l:"Confident",x:"Leo found an old violin in the attic. At first the sounds were squeaky and strange. But he practiced a little every single day. Soon his music was beautiful enough to make people smile."},
+    {e:"🐦",t:"The Long Journey",l:"Confident",x:"When winter comes, many birds fly far away. They travel thousands of miles to warmer lands. They follow the same path their parents flew. In spring, they return home once more."},
+    {e:"🌈",t:"The Colors of Light",l:"Confident",x:"Sunlight may look plain and white to us. But it is really made of many colors. When light passes through raindrops, it bends and splits. That is how a beautiful rainbow appears in the sky."},
+    {e:"🦁",t:"The Lion and the Mouse",l:"Confident",x:"A mighty lion caught a tiny mouse one day. The mouse begged for mercy, and the lion let him go. Later, the lion was trapped in a hunter's net. The little mouse chewed the ropes and set him free."},
+    {e:"🌙",t:"Night Animals",l:"Confident",x:"While we sleep, some animals wake up. Owls hunt silently through the dark trees. Bats fly out to catch flying insects. The night is full of busy, secret life."},
+    {e:"🏖️",t:"The Message in a Bottle",l:"Confident",x:"Lucy found a glass bottle on the sandy beach. Inside was a note from a faraway land. A child had written about their home and dreams. Lucy wrote back and sent the bottle out to sea."},
+    {e:"🌲",t:"The Quiet Forest",l:"Confident",x:"Deep in the forest, tall trees touch the sky. Soft moss covers the cool ground below. Squirrels leap from branch to branch above. If you listen closely, the forest tells its own story."}
+  ];
+
+  // Rainbow palette for the word sequence (high-contrast, kid friendly)
+  const COLORS = [
+    "#e8590c", "#d6336c", "#7048e8", "#1c7ed6",
+    "#0ca678", "#2f9e44", "#f08c00", "#c2255c"
+  ];
+
+  const LEVELS = ["Starter","Easy","Growing","Confident"];
+  const LEVEL_NOTE = {
+    "Starter":"Ages 3-5 · sight words",
+    "Easy":"Ages 4-6 · short sentences",
+    "Growing":"Ages 5-7 · longer stories",
+    "Confident":"Ages 6-9 · full paragraphs"
+  };
+
+  // ================= GAMIFICATION: coins, badges, shop, daily streak =================
+  const WALLET_KEY = "readingBuddyWallet_v2";
+  const PARENT_KEY = "readingBuddyParent_v1";
+
+  const PARENT_PRESETS = {
+    easy:   { rewardMult:1.5, coinWord:5, coinScene:45, coinReadAll:15, coinAllWords:20, coinStory:{Starter:20,Easy:28,Growing:40,Confident:55}, coinLineSkip:6, coinLinePerfect:12, coinDailyBase:25, coinDailyStreak:7, penaltyPct:4, penaltyMin:2, penaltyMax:20, petLossPerDay:10 },
+    normal: { rewardMult:1, coinWord:3, coinScene:35, coinReadAll:12, coinAllWords:15, coinStory:{Starter:15,Easy:20,Growing:30,Confident:40}, coinLineSkip:4, coinLinePerfect:8, coinDailyBase:15, coinDailyStreak:5, penaltyPct:8, penaltyMin:3, penaltyMax:40, petLossPerDay:20 },
+    strict: { rewardMult:0.75, coinWord:2, coinScene:25, coinReadAll:8, coinAllWords:10, coinStory:{Starter:10,Easy:14,Growing:20,Confident:28}, coinLineSkip:3, coinLinePerfect:6, coinDailyBase:10, coinDailyStreak:3, penaltyPct:12, penaltyMin:5, penaltyMax:60, petLossPerDay:30 }
+  };
+
+  let parentSettings = loadParentSettings();
+  let audioCtx = null;
+  let gateA = 0, gateB = 0;
+
+  function defaultParentSettings(){
+    return Object.assign({ preset:"normal", soundOn:true, penaltiesOn:true }, PARENT_PRESETS.normal);
+  }
+  function loadParentSettings(){
+    try {
+      const raw = localStorage.getItem(PARENT_KEY);
+      if (raw) return Object.assign(defaultParentSettings(), JSON.parse(raw));
+    } catch(e){}
+    return defaultParentSettings();
+  }
+  function saveParentSettings(){
+    try { localStorage.setItem(PARENT_KEY, JSON.stringify(parentSettings)); } catch(e){}
+  }
+
+  function ensureAudio(){
+    if (!parentSettings.soundOn) return null;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      return audioCtx;
+    } catch(e){ return null; }
+  }
+
+  function playTone(freq, dur, type, vol, slideTo){
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    const t0 = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || "sine";
+    osc.frequency.setValueAtTime(freq, t0);
+    if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t0 + dur);
+    gain.gain.setValueAtTime(0.001, t0);
+    gain.gain.exponentialRampToValueAtTime(vol || 0.15, t0 + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+
+  function playCoinSound(kind){
+    if (!parentSettings.soundOn) return;
+    if (kind === "drop"){
+      playTone(880, 0.08, "sine", 0.12);
+      setTimeout(()=> playTone(1175, 0.1, "sine", 0.1), 60);
+    } else if (kind === "big"){
+      playTone(523, 0.1, "triangle", 0.14);
+      setTimeout(()=> playTone(659, 0.1, "triangle", 0.12), 80);
+      setTimeout(()=> playTone(784, 0.15, "triangle", 0.1), 160);
+    } else if (kind === "spend"){
+      playTone(400, 0.12, "square", 0.08, 280);
+    } else if (kind === "sad"){
+      playTone(330, 0.2, "sine", 0.1, 220);
+    } else if (kind === "badge"){
+      playTone(587, 0.1, "sine", 0.12);
+      setTimeout(()=> playTone(740, 0.1, "sine", 0.12), 100);
+      setTimeout(()=> playTone(880, 0.2, "sine", 0.1), 200);
+    }
+  }
+
+  function rewardAmount(base){
+    return Math.max(1, Math.round(base * (parentSettings.rewardMult || 1)));
+  }
+
+  const piggyBank = document.getElementById("piggyBank");
+  const piggyEmoji = document.getElementById("piggyEmoji");
+  const coinStat = document.getElementById("coinStat");
+
+  function animatePiggyBank(amount, fromX, fromY){
+    if (!piggyBank) return;
+    piggyBank.classList.remove("shake", "glow");
+    void piggyBank.offsetWidth;
+    piggyBank.classList.add("shake", "glow");
+    if (coinStat){
+      coinStat.classList.remove("bump");
+      void coinStat.offsetWidth;
+      coinStat.classList.add("bump");
+    }
+    setTimeout(()=> piggyBank.classList.remove("shake", "glow"), 600);
+    setTimeout(()=>{ if (coinStat) coinStat.classList.remove("bump"); }, 400);
+
+    const rect = piggyBank.getBoundingClientRect();
+    const tx = rect.left + rect.width/2 - (fromX || innerWidth/2);
+    const ty = rect.top + rect.height/2 - (fromY || innerHeight/2);
+    const n = Math.min(5, Math.max(2, Math.ceil(amount / 10)));
+    for (let i = 0; i < n; i++){
+      setTimeout(()=>{
+        const c = document.createElement("div");
+        c.className = "fly-coin";
+        c.textContent = "🪙";
+        c.style.left = (fromX || innerWidth/2) + (Math.random()-0.5)*40 + "px";
+        c.style.top = (fromY || innerHeight/2) + (Math.random()-0.5)*30 + "px";
+        c.style.setProperty("--tx", tx + "px");
+        c.style.setProperty("--ty", ty + "px");
+        document.body.appendChild(c);
+        setTimeout(()=> c.remove(), 750);
+      }, i * 70);
+    }
+  }
+
+  const COMPLIMENTS = [
+    "You're a superstar reader! 🌟","Wow, amazing work! 🎉","You rock! Keep going! 🚀",
+    "So clever! I'm proud of you! 💛","Brilliant! You're on fire! 🔥","Fantastic job, champ! 🏆",
+    "You're getting stronger every day! 💪","Incredible! The best reader ever! 👑",
+    "Yay! Your brain is growing! 🧠","Super duper awesome! ✨","High five! You earned it! 🙌",
+    "Reading hero alert! 🦸","You make learning fun! 🎈","Gold star for you! ⭐"
+  ];
+  const PENALTY_MSGS = [
+    "Your pet got lonely without stories!",
+    "The treasure chest got a little lighter…",
+    "Your buddy missed story time!",
+    "Coins slipped away while you were away…"
+  ];
+
+  const BADGES = [
+    { id:"first_read", e:"📖", n:"First Story", d:"Read your first story", check: w=> w.totalStories >= 1 },
+    { id:"word_10", e:"🔤", n:"Word Tapper", d:"Tap 10 different words", check: w=> w.totalWords >= 10 },
+    { id:"word_50", e:"📚", n:"Word Wizard", d:"Tap 50 different words", check: w=> w.totalWords >= 50 },
+    { id:"word_200", e:"🧙", n:"Word Master", d:"Tap 200 different words", check: w=> w.totalWords >= 200 },
+    { id:"stories_5", e:"🌟", n:"Story Fan", d:"Finish 5 stories", check: w=> w.totalStories >= 5 },
+    { id:"stories_25", e:"📕", n:"Book Worm", d:"Finish 25 stories", check: w=> w.totalStories >= 25 },
+    { id:"stories_50", e:"🐛", n:"Mega Worm", d:"Finish 50 stories", check: w=> w.totalStories >= 50 },
+    { id:"scene_1", e:"🎭", n:"First Actor", d:"Complete 1 talk scene", check: w=> w.totalScenes >= 1 },
+    { id:"scene_5", e:"🎬", n:"Stage Star", d:"Complete 5 talk scenes", check: w=> w.totalScenes >= 5 },
+    { id:"scene_10", e:"🌈", n:"Super Star", d:"Complete 10 talk scenes", check: w=> w.totalScenes >= 10 },
+    { id:"scene_all", e:"👑", n:"Scene King", d:"Complete all talk scenes", check: w=> w.totalScenes >= 20 },
+    { id:"streak_3", e:"🔥", n:"3-Day Fire", d:"Read 3 days in a row", check: w=> w.streak >= 3 },
+    { id:"streak_7", e:"💥", n:"Week Warrior", d:"Read 7 days in a row", check: w=> w.streak >= 7 },
+    { id:"streak_14", e:"⚡", n:"Lightning", d:"Read 14 days in a row", check: w=> w.streak >= 14 },
+    { id:"coins_100", e:"🪙", n:"Coin Collector", d:"Save 100 coins", check: w=> w.coins >= 100 },
+    { id:"coins_500", e:"💰", n:"Rich Reader", d:"Save 500 coins", check: w=> w.coins >= 500 },
+    { id:"coins_2000", e:"🏦", n:"Treasure Tycoon", d:"Save 2000 coins", check: w=> w.coins >= 2000 },
+    { id:"shop_1", e:"🛒", n:"First Buy", d:"Buy something in the shop", check: w=> w.totalPurchases >= 1 },
+    { id:"shop_5", e:"🎁", n:"Shopaholic", d:"Buy 5 shop items", check: w=> w.totalPurchases >= 5 },
+    { id:"shop_10", e:"💎", n:"Collector", d:"Own 10 shop items", check: w=> w.owned.length >= 10 },
+    { id:"legend", e:"🦄", n:"Legend", d:"Own a legendary item", check: w=> w.owned.some(id=>{ const it=SHOP.find(s=>s.id===id); return it&&it.rarity==="legend"; }) },
+    { id:"level_5", e:"⭐", n:"Level 5", d:"Reach level 5", check: w=> playerLevel(w) >= 5 },
+    { id:"level_10", e:"🚀", n:"Level 10", d:"Reach level 10", check: w=> playerLevel(w) >= 10 },
+    { id:"read_all", e:"🎧", n:"Listen Pro", d:"Use Read All 10 times", check: w=> w.readAllCount >= 10 }
+  ];
+
+  const SHOP = [
+    { id:"sticker_star", cat:"Stickers", e:"⭐", n:"Gold Star", p:50, r:"common" },
+    { id:"sticker_heart", cat:"Stickers", e:"💖", n:"Heart Sticker", p:60, r:"common" },
+    { id:"sticker_rainbow", cat:"Stickers", e:"🌈", n:"Rainbow", p:75, r:"common" },
+    { id:"sticker_rocket", cat:"Stickers", e:"🚀", n:"Rocket", p:80, r:"common" },
+    { id:"sticker_crown", cat:"Stickers", e:"👑", n:"Mini Crown", p:100, r:"common" },
+    { id:"sticker_unicorn", cat:"Stickers", e:"🦄", n:"Unicorn", p:120, r:"rare" },
+    { id:"sticker_dragon", cat:"Stickers", e:"🐉", n:"Dragon", p:150, r:"rare" },
+    { id:"buddy_cat", cat:"Buddies", e:"🐱", n:"Kitty Buddy", p:150, r:"common", slot:"buddy" },
+    { id:"buddy_dog", cat:"Buddies", e:"🐶", n:"Puppy Buddy", p:180, r:"common", slot:"buddy" },
+    { id:"buddy_bunny", cat:"Buddies", e:"🐰", n:"Bunny Buddy", p:200, r:"common", slot:"buddy" },
+    { id:"buddy_panda", cat:"Buddies", e:"🐼", n:"Panda Buddy", p:280, r:"rare", slot:"buddy" },
+    { id:"buddy_fox", cat:"Buddies", e:"🦊", n:"Fox Buddy", p:350, r:"rare", slot:"buddy" },
+    { id:"buddy_dragon", cat:"Buddies", e:"🐲", n:"Dragon Buddy", p:800, r:"epic", slot:"buddy" },
+    { id:"buddy_unicorn", cat:"Buddies", e:"🦄", n:"Unicorn Buddy", p:1200, r:"legend", slot:"buddy" },
+    { id:"pet_butterfly", cat:"Pets", e:"🦋", n:"Butterfly Pet", p:250, r:"common", slot:"pet" },
+    { id:"pet_hamster", cat:"Pets", e:"🐹", n:"Hamster Pet", p:300, r:"common", slot:"pet" },
+    { id:"pet_penguin", cat:"Pets", e:"🐧", n:"Penguin Pet", p:400, r:"rare", slot:"pet" },
+    { id:"pet_owl", cat:"Pets", e:"🦉", n:"Owl Pet", p:500, r:"rare", slot:"pet" },
+    { id:"pet_dolphin", cat:"Pets", e:"🐬", n:"Dolphin Pet", p:700, r:"epic", slot:"pet" },
+    { id:"pet_alien", cat:"Pets", e:"👽", n:"Space Alien", p:1500, r:"legend", slot:"pet" },
+    { id:"frame_blue", cat:"Frames", e:"🔵", n:"Blue Frame", p:200, r:"common", slot:"frame" },
+    { id:"frame_gold", cat:"Frames", e:"🟡", n:"Gold Frame", p:450, r:"rare", slot:"frame" },
+    { id:"frame_rainbow", cat:"Frames", e:"🌈", n:"Rainbow Frame", p:650, r:"epic", slot:"frame" },
+    { id:"frame_diamond", cat:"Frames", e:"💠", n:"Diamond Frame", p:2000, r:"legend", slot:"frame" },
+    { id:"theme_ocean", cat:"Themes", e:"🌊", n:"Ocean World", p:400, r:"rare", slot:"theme", theme:"theme-ocean" },
+    { id:"theme_forest", cat:"Themes", e:"🌲", n:"Forest Fun", p:400, r:"rare", slot:"theme", theme:"theme-forest" },
+    { id:"theme_sunset", cat:"Themes", e:"🌅", n:"Sunset Sky", p:500, r:"rare", slot:"theme", theme:"theme-sunset" },
+    { id:"theme_candy", cat:"Themes", e:"🍬", n:"Candy Land", p:600, r:"epic", slot:"theme", theme:"theme-candy" },
+    { id:"theme_space", cat:"Themes", e:"🌌", n:"Space Galaxy", p:900, r:"epic", slot:"theme", theme:"theme-space" },
+    { id:"theme_gold", cat:"Themes", e:"✨", n:"Golden Palace", p:2500, r:"legend", slot:"theme", theme:"theme-gold" },
+    { id:"decor_balloon", cat:"Decor", e:"🎈", n:"Balloon Bouquet", p:350, r:"common" },
+    { id:"decor_cake", cat:"Decor", e:"🎂", n:"Birthday Cake", p:420, r:"common" },
+    { id:"decor_trophy", cat:"Decor", e:"🏆", n:"Shiny Trophy", p:550, r:"rare" },
+    { id:"decor_castle", cat:"Decor", e:"🏰", n:"Mini Castle", p:1100, r:"epic" },
+    { id:"decor_rocket", cat:"Decor", e:"🛸", n:"UFO Ride", p:1800, r:"legend" },
+    { id:"mega_crown", cat:"Mega Prizes", e:"👑", n:"Royal Crown", p:3000, r:"legend" },
+    { id:"mega_castle", cat:"Mega Prizes", e:"🏰", n:"Dream Castle", p:4500, r:"legend" },
+    { id:"mega_dragon", cat:"Mega Prizes", e:"🐉", n:"Epic Dragon", p:5500, r:"legend", slot:"buddy" },
+    { id:"mega_rocket", cat:"Mega Prizes", e:"🚀", n:"Space Rocket", p:6000, r:"legend" },
+    { id:"mega_treasure", cat:"Mega Prizes", e:"💎", n:"Treasure Chest", p:7500, r:"legend" },
+    { id:"mega_kingdom", cat:"Mega Prizes", e:"🌍", n:"Whole Kingdom", p:10000, r:"legend" },
+    { id:"power_x2", cat:"Power-ups", e:"⚡", n:"2× Coins (1 day)", p:300, r:"rare", power:"double" },
+    { id:"power_lucky", cat:"Power-ups", e:"🍀", n:"Lucky Charm", p:500, r:"epic", power:"lucky" }
+  ];
+
+  const SHOP_CATS = ["All","Stickers","Buddies","Pets","Frames","Themes","Decor","Mega Prizes","Power-ups"];
+
+  let wallet = loadWallet();
+  let shopCat = "All";
+  let storiesFinishedThisSession = new Set();
+  let lastStarCount = 0;
+
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function daysBetween(a, b){
+    const da = new Date(a+"T12:00:00"), db = new Date(b+"T12:00:00");
+    return Math.round((db - da) / 86400000);
+  }
+  function playerLevel(w){
+    const xp = (w.totalStories||0)*10 + (w.totalScenes||0)*25 + (w.totalWords||0)*2 + (w.streak||0)*5;
+    return Math.max(1, Math.floor(xp / 80) + 1);
+  }
+  function defaultWallet(){
+    return {
+      coins: 30, gems: 0, streak: 0, petHappy: 100,
+      lastReadDate: "", lastOpenDate: "", lastPenaltyCheck: "", readDay: "",
+      totalStories: 0, totalScenes: 0, totalWords: 0, totalPurchases: 0,
+      readAllCount: 0, storiesReadToday: {}, wordSet: {},
+      badges: {}, owned: [], equipped: { buddy:"🐢", pet:"🐢", frame:"", theme:"" },
+      powerDoubleUntil: ""
+    };
+  }
+  function loadWallet(){
+    try {
+      const raw = localStorage.getItem(WALLET_KEY);
+      if (raw){ return Object.assign(defaultWallet(), JSON.parse(raw)); }
+    } catch(e){}
+    return defaultWallet();
+  }
+  function saveWallet(){
+    try { localStorage.setItem(WALLET_KEY, JSON.stringify(wallet)); } catch(e){}
+  }
+
+  const coinVal = document.getElementById("coinVal");
+  const gemVal = document.getElementById("gemVal");
+  const streakVal = document.getElementById("streakVal");
+  const levelVal = document.getElementById("levelVal");
+  const petEmoji = document.getElementById("petEmoji");
+  const petMsg = document.getElementById("petMsg");
+  const petBox = document.getElementById("petBox");
+  const appTitle = document.getElementById("appTitle");
+  const toastWrap = document.getElementById("toastWrap");
+  const shopBalance = document.getElementById("shopBalance");
+  const shopFilters = document.getElementById("shopFilters");
+  const shopGrid = document.getElementById("shopGrid");
+  const badgeGrid = document.getElementById("badgeGrid");
+  const badgeCount = document.getElementById("badgeCount");
+  const equipRow = document.getElementById("equipRow");
+  const penaltyModal = document.getElementById("penaltyModal");
+  const penaltyTitle = document.getElementById("penaltyTitle");
+  const penaltyText = document.getElementById("penaltyText");
+  const penaltyOk = document.getElementById("penaltyOk");
+  const tabShop = document.getElementById("tabShop");
+  const tabTrophy = document.getElementById("tabTrophy");
+  const viewShop = document.getElementById("viewShop");
+  const viewTrophy = document.getElementById("viewTrophy");
+
+  function randCompliment(){ return COMPLIMENTS[(Math.random()*COMPLIMENTS.length)|0]; }
+
+  function showToast(msg, kind){
+    if (!toastWrap) return;
+    const t = document.createElement("div");
+    t.className = "toast" + (kind ? " "+kind : "");
+    t.textContent = msg;
+    toastWrap.appendChild(t);
+    setTimeout(()=>{ if (t.parentNode) t.remove(); }, 3000);
+  }
+
+  function coinPop(amount, x, y){
+    const fx = x || innerWidth/2, fy = y || innerHeight/2;
+    const el = document.createElement("div");
+    el.className = "coin-pop";
+    el.textContent = "+" + amount + " 🪙";
+    el.style.left = fx + "px";
+    el.style.top = fy + "px";
+    document.body.appendChild(el);
+    setTimeout(()=> el.remove(), 1200);
+    playCoinSound(amount >= 20 ? "big" : "drop");
+    animatePiggyBank(amount, fx, fy);
+  }
+
+  function coinMultiplier(){
+    if (wallet.powerDoubleUntil && wallet.powerDoubleUntil >= todayStr()) return 2;
+    return 1;
+  }
+
+  function addCoins(n, reason, silent){
+    if (!n) return;
+    const mult = coinMultiplier();
+    const earned = Math.round(rewardAmount(n) * mult);
+    wallet.coins += earned;
+    if (mult > 1 && reason) reason += " (2× boost!)";
+    saveWallet();
+    updateWalletUI();
+    if (!silent) coinPop(earned);
+    if (reason && !silent) showToast(randCompliment() + " +" + earned + " 🪙 — " + reason);
+    checkBadges();
+  }
+
+  function spendCoins(n){
+    if (wallet.coins < n) return false;
+    wallet.coins -= n;
+    saveWallet();
+    updateWalletUI();
+    playCoinSound("spend");
+    if (piggyBank){ piggyBank.classList.add("shake"); setTimeout(()=> piggyBank.classList.remove("shake"), 500); }
+    return true;
+  }
+
+  function addGems(n){
+    wallet.gems += n;
+    saveWallet();
+    updateWalletUI();
+    if (n){
+      playCoinSound("badge");
+      showToast("💎 +" + n + " gems! " + randCompliment(), "prize");
+      if (piggyEmoji) { piggyEmoji.textContent = "💎"; setTimeout(()=>{ piggyEmoji.textContent = "🐷"; }, 1200); }
+    }
+  }
+
+  function markReadingDay(){
+    const today = todayStr();
+    const prev = wallet.lastReadDate;
+    if (prev === today) return;
+    if (prev){
+      const gap = daysBetween(prev, today);
+      if (gap === 1) wallet.streak++;
+      else if (gap > 1) wallet.streak = 1;
+    } else {
+      wallet.streak = 1;
+    }
+    wallet.lastReadDate = today;
+    wallet.petHappy = Math.min(100, wallet.petHappy + 15);
+    const dailyBonus = parentSettings.coinDailyBase + Math.min(wallet.streak, 10) * parentSettings.coinDailyStreak;
+    addCoins(dailyBonus, "daily reading bonus! 🔥 " + wallet.streak + " day streak");
+    if (wallet.streak > 1 && wallet.streak % 3 === 0) addGems(1);
+    saveWallet();
+    updateWalletUI();
+  }
+
+  function refreshDailyWallet(){
+    const today = todayStr();
+    if (wallet.readDay !== today){
+      wallet.storiesReadToday = {};
+      wallet.readDay = today;
+      saveWallet();
+    }
+  }
+
+  function applyMissedDayPenalties(){
+    const today = todayStr();
+    refreshDailyWallet();
+    if (!wallet.lastReadDate){
+      wallet.lastOpenDate = today;
+      saveWallet();
+      return;
+    }
+    if (wallet.lastPenaltyCheck === today){
+      wallet.lastOpenDate = today;
+      return;
+    }
+    const missed = daysBetween(wallet.lastReadDate, today) - 1;
+    if (missed <= 0){
+      wallet.lastOpenDate = today;
+      saveWallet();
+      return;
+    }
+    wallet.lastPenaltyCheck = today;
+    let totalLost = 0;
+    if (parentSettings.penaltiesOn){
+      const pct = (parentSettings.penaltyPct || 0) / 100;
+      const pMin = parentSettings.penaltyMin || 0;
+      const pMax = parentSettings.penaltyMax || 40;
+      const petLoss = parentSettings.petLossPerDay || 20;
+      for (let i = 0; i < missed; i++){
+        const loss = Math.max(pMin, Math.min(pMax, Math.round(wallet.coins * pct)));
+        wallet.coins = Math.max(0, wallet.coins - loss);
+        totalLost += loss;
+        wallet.petHappy = Math.max(0, wallet.petHappy - petLoss);
+      }
+      wallet.streak = 0;
+      saveWallet();
+      updateWalletUI();
+      playCoinSound("sad");
+      if (piggyEmoji){ piggyEmoji.textContent = "😢"; setTimeout(()=>{ piggyEmoji.textContent = "🐷"; }, 2000); }
+      const msg = PENALTY_MSGS[(Math.random()*PENALTY_MSGS.length)|0] +
+        " You missed " + missed + " day" + (missed>1?"s":"") + " of reading and lost " + totalLost + " 🪙. " +
+        "Read today to earn coins back and make your pet happy again!";
+      penaltyTitle.textContent = missed > 2 ? "😭 Oh no! Your treasures faded…" : "😢 Your pet missed you!";
+      penaltyText.textContent = msg;
+      penaltyModal.classList.add("show");
+      showToast("Lost " + totalLost + " coins — read today! 📖", "warn");
+    }
+    wallet.lastOpenDate = today;
+    saveWallet();
+  }
+
+  function updateWalletUI(){
+    if (coinVal) coinVal.textContent = wallet.coins;
+    if (gemVal) gemVal.textContent = wallet.gems;
+    if (streakVal) streakVal.textContent = wallet.streak + " day" + (wallet.streak!==1?"s":"");
+    if (levelVal) levelVal.textContent = "Lv " + playerLevel(wallet);
+    if (shopBalance) shopBalance.textContent = "🪙 " + wallet.coins + " coins";
+    const buddy = wallet.equipped.buddy || "🐢";
+    const pet = wallet.equipped.pet || buddy;
+    if (petEmoji) petEmoji.textContent = pet;
+    if (appTitle) appTitle.textContent = buddy + " Reading Buddy";
+    if (petBox){
+      petBox.classList.toggle("sad", wallet.petHappy < 50);
+      if (petMsg){
+        if (wallet.petHappy >= 80) petMsg.textContent = "Super happy! Let's read! 🎉";
+        else if (wallet.petHappy >= 50) petMsg.textContent = "Ready for a story! 📖";
+        else petMsg.textContent = "Sad… please read today! 😢";
+      }
+    }
+    applyTheme();
+    if (equipRow) buildEquipRow();
+    if (typeof updateProgressUI === "function") updateProgressUI();
+  }
+
+  function applyTheme(){
+    document.body.className = wallet.equipped.theme || "";
+  }
+
+  function onWordEarn(wordKey){
+    wallet.wordSet = wallet.wordSet || {};
+    if (wallet.wordSet[wordKey]) return;
+    wallet.wordSet[wordKey] = true;
+    wallet.totalWords = Object.keys(wallet.wordSet).length;
+    markReadingDay();
+    addCoins(parentSettings.coinWord, null, true);
+    if (wallet.totalWords % 10 === 0){
+      const w = rewardAmount(parentSettings.coinWord);
+      showToast(randCompliment() + " — " + wallet.totalWords + " words learned! +" + w + " 🪙");
+      coinPop(w);
+    }
+    saveWallet();
+    checkBadges();
+  }
+
+  function onStoryComplete(storyKey){
+    if (storiesFinishedThisSession.has(storyKey)) return;
+    storiesFinishedThisSession.add(storyKey);
+    if (!wallet.storiesReadToday[storyKey]){
+      wallet.storiesReadToday[storyKey] = true;
+      wallet.totalStories++;
+      markReadingDay();
+      const lvl = LIBRARY[currentIndex] ? LIBRARY[currentIndex].l : "Easy";
+      const bonus = (parentSettings.coinStory && parentSettings.coinStory[lvl]) || 20;
+      addCoins(bonus, "story finished!");
+      saveWallet();
+    }
+  }
+
+  function onReadAllDone(){
+    wallet.readAllCount++;
+    markReadingDay();
+    addCoins(parentSettings.coinReadAll, "read the whole story");
+    saveWallet();
+    checkBadges();
+  }
+
+  function onSceneComplete(){
+    wallet.totalScenes++;
+    markReadingDay();
+    addCoins(parentSettings.coinScene, "scene completed!");
+    if (Math.random() < 0.3) addGems(1);
+    saveWallet();
+    checkBadges();
+  }
+
+  function checkBadges(){
+    let newCount = 0;
+    BADGES.forEach(b=>{
+      if (!wallet.badges[b.id] && b.check(wallet)){
+        wallet.badges[b.id] = todayStr();
+        newCount++;
+        const gemReward = b.id.includes("legend") || b.id.includes("all") ? 3 : 1;
+        addGems(gemReward);
+        showToast("🏆 New badge: " + b.n + "! +" + gemReward + " 💎", "prize");
+        confettiBurst();
+      }
+    });
+    if (newCount) saveWallet();
+    buildBadges();
+  }
+
+  function buildShopFilters(){
+    if (!shopFilters) return;
+    shopFilters.innerHTML = "";
+    SHOP_CATS.forEach(cat=>{
+      const b = document.createElement("button");
+      b.className = "shop-filter" + (cat===shopCat?" active":"");
+      b.textContent = cat;
+      b.addEventListener("click", ()=>{ shopCat = cat; buildShopFilters(); buildShop(); });
+      shopFilters.appendChild(b);
+    });
+  }
+
+  function buildShop(){
+    if (!shopGrid) return;
+    shopGrid.innerHTML = "";
+    SHOP.forEach(item=>{
+      if (shopCat !== "All" && item.cat !== shopCat) return;
+      const owned = wallet.owned.includes(item.id);
+      const canAfford = wallet.coins >= item.p;
+      const equipped = item.slot && (
+        (item.slot==="buddy" && wallet.equipped.buddy===item.e) ||
+        (item.slot==="pet" && wallet.equipped.pet===item.e) ||
+        (item.slot==="frame" && wallet.equipped.frame===item.id) ||
+        (item.slot==="theme" && wallet.equipped.theme===item.theme)
+      );
+      const btn = document.createElement("button");
+      btn.className = "shop-item r-" + item.r + (owned?" owned":"") + (!owned&&!canAfford?" locked":"") + (equipped?" equipped":"");
+      const need = item.p - wallet.coins;
+      btn.innerHTML =
+        '<span class="si-emoji">'+item.e+'</span>' +
+        '<span class="si-name">'+item.n+'</span>' +
+        '<span class="si-rarity">'+item.r+'</span>' +
+        '<span class="si-price">' + (owned ? "Equip / Owned" : canAfford ? "🪙 "+item.p : "Need "+need+" more 🪙") + '</span>';
+      btn.addEventListener("click", ()=> buyOrEquip(item));
+      shopGrid.appendChild(btn);
+    });
+  }
+
+  function buyOrEquip(item){
+    const owned = wallet.owned.includes(item.id);
+    if (!owned){
+      if (wallet.coins < item.p){
+        showToast("Save up! You need " + (item.p - wallet.coins) + " more coins 🪙", "warn");
+        speak("Keep reading to earn more coins!");
+        return;
+      }
+      if (!confirm("Buy " + item.n + " for " + item.p + " coins?")){
+        return;
+      }
+      spendCoins(item.p);
+      wallet.owned.push(item.id);
+      wallet.totalPurchases++;
+      if (item.power === "double"){
+        const d = new Date(); d.setDate(d.getDate()+1);
+        wallet.powerDoubleUntil = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+      }
+      saveWallet();
+      showToast("🎉 You bought " + item.n + "! " + randCompliment(), "prize");
+      confettiBurst();
+      if (item.slot) equipItem(item);
+      else buildShop();
+      checkBadges();
+      return;
+    }
+    if (item.slot) equipItem(item);
+    else showToast("You already own " + item.n + "! ✓");
+  }
+
+  function equipItem(item){
+    if (item.slot === "buddy") wallet.equipped.buddy = item.e;
+    if (item.slot === "pet") wallet.equipped.pet = item.e;
+    if (item.slot === "frame") wallet.equipped.frame = item.id;
+    if (item.slot === "theme") wallet.equipped.theme = item.theme || "";
+    saveWallet();
+    updateWalletUI();
+    buildShop();
+    showToast("Equipped " + item.n + "! " + item.e);
+  }
+
+  function buildEquipRow(){
+    if (!equipRow) return;
+    const f = wallet.equipped.frame ? SHOP.find(s=>s.id===wallet.equipped.frame) : null;
+    equipRow.innerHTML =
+      '<div class="equip-chip"><span class="ec-emoji">'+(wallet.equipped.buddy||"🐢")+'</span> Buddy</div>' +
+      '<div class="equip-chip"><span class="ec-emoji">'+(wallet.equipped.pet||"🐢")+'</span> Pet</div>' +
+      (f ? '<div class="equip-chip"><span class="ec-emoji">'+f.e+'</span> '+f.n+'</div>' : '') +
+      (wallet.equipped.theme ? '<div class="equip-chip"><span class="ec-emoji">🎨</span> Theme on</div>' : '');
+  }
+
+  function buildBadges(){
+    if (!badgeGrid) return;
+    badgeGrid.innerHTML = "";
+    let earned = 0;
+    BADGES.forEach(b=>{
+      const has = !!wallet.badges[b.id];
+      if (has) earned++;
+      const card = document.createElement("div");
+      card.className = "badge-card" + (has?" earned":"");
+      card.innerHTML = '<span class="bdg-emoji">'+b.e+'</span><div class="bdg-name">'+b.n+'</div><div class="bdg-desc">'+b.d+'</div>';
+      badgeGrid.appendChild(card);
+    });
+    if (badgeCount) badgeCount.textContent = earned + " / " + BADGES.length + " badges earned — keep going, champion!";
+  }
+
+  penaltyOk.addEventListener("click", ()=>{
+    penaltyModal.classList.remove("show");
+    showTab("read");
+  });
+
+  // ---------- Parent settings ----------
+  const parentModal = document.getElementById("parentModal");
+  const parentGateBox = document.getElementById("parentGateBox");
+  const parentSettingsBox = document.getElementById("parentSettingsBox");
+  const parentBtn = document.getElementById("parentBtn");
+  const gateQuestion = document.getElementById("gateQuestion");
+  const gateAnswer = document.getElementById("gateAnswer");
+  const gateSubmit = document.getElementById("gateSubmit");
+  const psPreset = document.getElementById("psPreset");
+  const psSound = document.getElementById("psSound");
+  const psPenalties = document.getElementById("psPenalties");
+  const psRewardMult = document.getElementById("psRewardMult");
+  const psCoinWord = document.getElementById("psCoinWord");
+  const psCoinScene = document.getElementById("psCoinScene");
+  const psDailyBase = document.getElementById("psDailyBase");
+  const psPenaltyPct = document.getElementById("psPenaltyPct");
+  const psPenaltyMax = document.getElementById("psPenaltyMax");
+  const psSave = document.getElementById("psSave");
+  const psClose = document.getElementById("psClose");
+  const psResetWallet = document.getElementById("psResetWallet");
+
+  function newGateQuestion(){
+    gateA = 2 + ((Math.random()*7)|0);
+    gateB = 2 + ((Math.random()*7)|0);
+    if (gateQuestion) gateQuestion.textContent = gateA + " × " + gateB;
+    if (gateAnswer) gateAnswer.value = "";
+  }
+
+  function fillParentForm(){
+    if (psPreset) psPreset.value = parentSettings.preset || "normal";
+    if (psSound) psSound.checked = parentSettings.soundOn !== false;
+    if (psPenalties) psPenalties.checked = parentSettings.penaltiesOn !== false;
+    if (psRewardMult) psRewardMult.value = parentSettings.rewardMult || 1;
+    if (psCoinWord) psCoinWord.value = parentSettings.coinWord || 3;
+    if (psCoinScene) psCoinScene.value = parentSettings.coinScene || 35;
+    if (psDailyBase) psDailyBase.value = parentSettings.coinDailyBase || 15;
+    if (psPenaltyPct) psPenaltyPct.value = parentSettings.penaltyPct || 8;
+    if (psPenaltyMax) psPenaltyMax.value = parentSettings.penaltyMax || 40;
+    syncParentLabels();
+  }
+
+  function syncParentLabels(){
+    const set = (id, val)=>{ const el = document.getElementById(id); if (el) el.textContent = val; };
+    if (psRewardMult) set("psRewardMultVal", psRewardMult.value + "×");
+    if (psCoinWord) set("psCoinWordVal", psCoinWord.value);
+    if (psCoinScene) set("psCoinSceneVal", psCoinScene.value);
+    if (psDailyBase) set("psDailyBaseVal", psDailyBase.value);
+    if (psPenaltyPct) set("psPenaltyPctVal", psPenaltyPct.value + "%");
+    if (psPenaltyMax) set("psPenaltyMaxVal", psPenaltyMax.value);
+  }
+
+  function applyPreset(name){
+    const p = PARENT_PRESETS[name] || PARENT_PRESETS.normal;
+    const keepSound = parentSettings.soundOn;
+    const keepPen = parentSettings.penaltiesOn;
+    parentSettings = Object.assign(defaultParentSettings(), p, { preset: name, soundOn: keepSound, penaltiesOn: keepPen });
+    fillParentForm();
+  }
+
+  function openParentGate(){
+    newGateQuestion();
+    if (parentGateBox) parentGateBox.style.display = "";
+    if (parentSettingsBox) parentSettingsBox.style.display = "none";
+    parentModal.classList.add("show");
+    if (gateAnswer) gateAnswer.focus();
+  }
+
+  function openParentSettings(){
+    if (parentGateBox) parentGateBox.style.display = "none";
+    if (parentSettingsBox) parentSettingsBox.style.display = "";
+    fillParentForm();
+  }
+
+  function readParentForm(){
+    const base = PARENT_PRESETS[psPreset ? psPreset.value : "normal"] || PARENT_PRESETS.normal;
+    parentSettings.preset = psPreset ? psPreset.value : "normal";
+    parentSettings.soundOn = psSound ? psSound.checked : true;
+    parentSettings.penaltiesOn = psPenalties ? psPenalties.checked : true;
+    parentSettings.rewardMult = psRewardMult ? parseFloat(psRewardMult.value) : 1;
+    parentSettings.coinWord = psCoinWord ? parseInt(psCoinWord.value,10) : 3;
+    parentSettings.coinScene = psCoinScene ? parseInt(psCoinScene.value,10) : 35;
+    parentSettings.coinDailyBase = psDailyBase ? parseInt(psDailyBase.value,10) : 15;
+    parentSettings.penaltyPct = psPenaltyPct ? parseInt(psPenaltyPct.value,10) : 8;
+    parentSettings.penaltyMax = psPenaltyMax ? parseInt(psPenaltyMax.value,10) : 40;
+    parentSettings.coinStory = base.coinStory;
+    parentSettings.coinReadAll = base.coinReadAll;
+    parentSettings.coinAllWords = base.coinAllWords;
+    parentSettings.coinLineSkip = base.coinLineSkip;
+    parentSettings.coinLinePerfect = base.coinLinePerfect;
+    parentSettings.coinDailyStreak = base.coinDailyStreak;
+    parentSettings.penaltyMin = base.penaltyMin;
+    parentSettings.petLossPerDay = base.petLossPerDay;
+    saveParentSettings();
+  }
+
+  if (parentBtn) parentBtn.addEventListener("click", openParentGate);
+  if (gateSubmit) gateSubmit.addEventListener("click", ()=>{
+    const ans = parseInt(gateAnswer && gateAnswer.value, 10);
+    if (ans === gateA * gateB) openParentSettings();
+    else { showToast("Wrong answer — parents only! 🔒", "warn"); newGateQuestion(); }
+  });
+  if (gateAnswer) gateAnswer.addEventListener("keydown", e=>{ if (e.key === "Enter") gateSubmit.click(); });
+
+  [psRewardMult, psCoinWord, psCoinScene, psDailyBase, psPenaltyPct, psPenaltyMax].forEach(el=>{
+    if (el) el.addEventListener("input", syncParentLabels);
+  });
+  if (psPreset) psPreset.addEventListener("change", ()=> applyPreset(psPreset.value));
+
+  if (psSave) psSave.addEventListener("click", ()=>{
+    readParentForm();
+    showToast("Parent settings saved! ✓");
+    parentModal.classList.remove("show");
+  });
+  if (psClose) psClose.addEventListener("click", ()=> parentModal.classList.remove("show"));
+  if (psResetWallet) psResetWallet.addEventListener("click", ()=>{
+    if (!confirm("Reset ALL coins, badges, shop items and progress for this child?")){
+      return;
+    }
+    wallet = defaultWallet();
+    saveWallet();
+    progress = { stars: 0, done: {} };
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(progress)); } catch(e){}
+    updateWalletUI();
+    buildShop();
+    buildBadges();
+    buildScenes();
+    if (typeof updateProgressUI === "function") updateProgressUI();
+    showToast("Child wallet reset.", "warn");
+    parentModal.classList.remove("show");
+  });
+
+  parentModal.addEventListener("click", e=>{ if (e.target === parentModal) parentModal.classList.remove("show"); });
+
+  // ---------- Elements ----------
+  const libGrid    = document.getElementById("libGrid");
+  const libFilters = document.getElementById("libFilters");
+  const libSearch  = document.getElementById("libSearch");
+  const passageEl  = document.getElementById("passage");
+  const titleEl    = document.getElementById("storyTitle");
+  const starBar    = document.getElementById("starBar");
+  const userText   = document.getElementById("userText");
+  const loadBtn    = document.getElementById("loadText");
+  const clearBtn   = document.getElementById("clearText");
+  const uploadBtn  = document.getElementById("uploadBtn");
+  const fileInput  = document.getElementById("fileInput");
+  const readAllBtn = document.getElementById("readAll");
+  const stopBtn    = document.getElementById("stopBtn");
+  const colorBtn   = document.getElementById("colorToggle");
+  const noVoice    = document.getElementById("noVoice");
+  const voiceSel   = document.getElementById("voiceSelect");
+  const speedSel   = document.getElementById("speedSelect");
+  const testBtn    = document.getElementById("testBtn");
+  const prevBtn    = document.getElementById("prevBtn");
+  const nextBtn    = document.getElementById("nextBtn");
+  const surpriseBtn= document.getElementById("surpriseBtn");
+  const navPos     = document.getElementById("navPos");
+
+  const synth = window.speechSynthesis;
+  let colorsOn = true;
+  let tappedWords = new Set();
+  let chosenVoice = null;
+  let allVoices = [];
+  let baseRate = parseFloat(speedSel.value) || 0.9;
+  let currentText = LIBRARY[0].x;
+  let activeLevel = "All";
+  let currentIndex = 0;   // index into LIBRARY of the story being read (-1 = custom text)
+
+  if (!synth) noVoice.style.display = "block";
+
+  // ---------- Voices ----------
+  function isEnglish(v){ return /^en(-|_)/i.test(v.lang) || /english/i.test(v.name); }
+
+  function defaultVoiceIndex(list){
+    const prefer = ["google us english","jenny","aria","samantha","microsoft ava",
+                    "microsoft emma","zira","karen","moira","tessa","fiona","neerja","aarti"];
+    for (const p of prefer){
+      const i = list.findIndex(v => v.name.toLowerCase().includes(p));
+      if (i !== -1) return i;
+    }
+    const f = list.findIndex(v => /female/i.test(v.name));
+    return f !== -1 ? f : 0;
+  }
+
+  function buildVoiceList() {
+    if (!synth) return;
+    const voices = synth.getVoices();
+    if (!voices.length) return;
+    const en = voices.filter(isEnglish).sort((a,b)=> a.name.localeCompare(b.name));
+    const other = voices.filter(v => !isEnglish(v)).sort((a,b)=> a.name.localeCompare(b.name));
+    allVoices = en.concat(other);
+
+    const prevName = chosenVoice ? chosenVoice.name : null;
+    voiceSel.innerHTML = "";
+
+    if (en.length){
+      const og = document.createElement("optgroup"); og.label = "English voices";
+      en.forEach(v => og.appendChild(makeOption(v)));
+      voiceSel.appendChild(og);
+    }
+    if (other.length){
+      const og2 = document.createElement("optgroup"); og2.label = "Other languages";
+      other.forEach(v => og2.appendChild(makeOption(v)));
+      voiceSel.appendChild(og2);
+    }
+
+    let idx = prevName ? allVoices.findIndex(v=>v.name===prevName) : -1;
+    if (idx === -1) idx = defaultVoiceIndex(allVoices);
+    chosenVoice = allVoices[idx];
+    voiceSel.value = String(idx);
+  }
+
+  function makeOption(v){
+    const idx = allVoices.indexOf(v);
+    const o = document.createElement("option");
+    o.value = String(idx);
+    o.textContent = v.name + " (" + v.lang + ")" + (v.default ? " — default" : "");
+    return o;
+  }
+
+  if (synth) {
+    buildVoiceList();
+    synth.onvoiceschanged = buildVoiceList;
+    setTimeout(buildVoiceList, 400);
+    setTimeout(buildVoiceList, 1200);
+  }
+
+  voiceSel.addEventListener("change", ()=>{
+    const idx = parseInt(voiceSel.value, 10);
+    if (!isNaN(idx) && allVoices[idx]) chosenVoice = allVoices[idx];
+  });
+  speedSel.addEventListener("change", ()=>{ baseRate = parseFloat(speedSel.value) || 0.9; });
+  testBtn.addEventListener("click", ()=>{
+    if (synth) synth.cancel();
+    speak("Hi! I am your reading buddy. Tap any word and I will say it.");
+  });
+
+  function speak(text, opts) {
+    if (!synth) return;
+    opts = opts || {};
+    const u = new SpeechSynthesisUtterance(text);
+    if (chosenVoice) u.voice = chosenVoice;
+    u.lang = (chosenVoice && chosenVoice.lang) || "en-US";
+    u.rate = (typeof opts.rate === "number") ? opts.rate : baseRate;
+    u.pitch = 1.1; u.volume = 1;
+    if (opts.onstart) u.onstart = opts.onstart;
+    if (opts.onend) u.onend = opts.onend;
+    synth.speak(u);
+  }
+
+  function cleanWord(w){ return w.replace(/[^a-zA-Z'-]/g, ""); }
+
+  // ---------- Render any text ----------
+  function renderText(text, title) {
+    stopAll();
+    currentText = text;
+    tappedWords = new Set();
+    titleEl.textContent = title || "Your Reading";
+    passageEl.innerHTML = "";
+    updateStars();
+
+    const tokens = text.split(/(\s+)/);
+    let colorIndex = 0;
+    tokens.forEach(tok => {
+      if (tok === "") return;
+      if (/^\s+$/.test(tok)) {
+        if (tok.indexOf("\n") !== -1) passageEl.appendChild(document.createElement("br"));
+        else passageEl.appendChild(document.createTextNode(" "));
+        return;
+      }
+      const span = document.createElement("span");
+      span.className = "word";
+      span.textContent = tok;
+      const spoken = cleanWord(tok);
+      if (spoken) { span.dataset.color = COLORS[colorIndex % COLORS.length]; colorIndex++; }
+      applyColor(span);
+      span.addEventListener("click", () => onWordTap(span, spoken));
+      passageEl.appendChild(span);
+    });
+    passageEl.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function applyColor(span){
+    if (colorsOn && span.dataset.color) span.style.color = span.dataset.color;
+    else span.style.color = "var(--ink)";
+  }
+  function refreshColors(){ passageEl.querySelectorAll(".word").forEach(applyColor); }
+
+  // ---------- Tap a word ----------
+  function onWordTap(span, spoken) {
+    if (!spoken) return;
+    if (synth) synth.cancel();
+    clearSpeaking();
+    span.classList.add("speaking");
+    span.classList.remove("pop"); void span.offsetWidth; span.classList.add("pop");
+    speak(spoken, { onend: () => span.classList.remove("speaking") });
+    setTimeout(() => span.classList.remove("speaking"), 2500);
+    const key = spoken.toLowerCase();
+    if (!tappedWords.has(key)) { tappedWords.add(key); onWordEarn(key); updateStars(); }
+  }
+  function clearSpeaking(){ passageEl.querySelectorAll(".word.speaking").forEach(w=>w.classList.remove("speaking")); }
+
+  // ---------- Read whole passage ----------
+  let reading = false;
+  function readStory() {
+    if (!synth) return;
+    stopAll(); reading = true;
+    const words = Array.from(passageEl.querySelectorAll(".word"));
+    let i = 0;
+    (function next(){
+      if (!reading || i >= words.length){ reading=false; clearSpeaking(); if (i >= words.length) onReadAllDone(); return; }
+      const span = words[i];
+      const spoken = cleanWord(span.textContent);
+      clearSpeaking();
+      if (!spoken){ i++; next(); return; }
+      span.classList.add("speaking");
+      span.scrollIntoView({behavior:"smooth", block:"center"});
+      speak(spoken, { onend: ()=>{ span.classList.remove("speaking"); i++; next(); } });
+    })();
+  }
+
+  function stopAll(){ reading=false; if(synth) synth.cancel(); clearSpeaking(); }
+
+  // ---------- Stars ----------
+  function updateStars(){
+    const total = new Set(currentText.split(/\s+/).map(w=>cleanWord(w).toLowerCase()).filter(Boolean)).size;
+    const got = tappedWords.size;
+    if (!total || got===0){ starBar.textContent=""; lastStarCount = 0; return; }
+    const filled = Math.min(5, Math.round((got/total)*5));
+    let s=""; for(let k=0;k<5;k++) s += k<filled ? "⭐":"☆";
+    starBar.textContent = filled===5 ? "⭐⭐⭐⭐⭐ 🎉 You read them all! +bonus 🪙" : s;
+    if (filled === 5 && lastStarCount < 5){
+      const storyKey = currentIndex >= 0 ? "lib_"+currentIndex : "custom_"+currentText.slice(0,40);
+      onStoryComplete(storyKey);
+      addCoins(parentSettings.coinAllWords, "all words tapped!");
+      confettiBurst();
+    }
+    lastStarCount = filled;
+  }
+
+  // ---------- Build the library grid ----------
+  function buildFilters(){
+    const all = ["All"].concat(LEVELS);
+    libFilters.innerHTML = "";
+    all.forEach(lv=>{
+      const b = document.createElement("button");
+      b.className = "lib-filter" + (lv===activeLevel ? " active":"");
+      const count = lv==="All" ? LIBRARY.length : LIBRARY.filter(s=>s.l===lv).length;
+      b.textContent = (lv==="All"?"📖 All":iconFor(lv)+" "+lv) + " (" + count + ")";
+      b.addEventListener("click", ()=>{ activeLevel = lv; buildFilters(); renderGrid(); });
+      libFilters.appendChild(b);
+    });
+    const note = document.createElement("span");
+    note.className = "lib-count";
+    note.textContent = activeLevel==="All" ? "Easiest → Hardest" : LEVEL_NOTE[activeLevel];
+    libFilters.appendChild(note);
+  }
+
+  function iconFor(lv){
+    return {Starter:"🌱",Easy:"🐣",Growing:"🌟",Confident:"🚀"}[lv] || "📘";
+  }
+
+  function renderGrid(){
+    const q = (libSearch.value || "").trim().toLowerCase();
+    libGrid.innerHTML = "";
+    let shown = 0;
+    LIBRARY.forEach((s, idx)=>{
+      if (activeLevel !== "All" && s.l !== activeLevel) return;
+      if (q && !(s.t.toLowerCase().includes(q) || s.x.toLowerCase().includes(q))) return;
+      shown++;
+      const b = document.createElement("button");
+      b.className = "story-btn";
+      b.dataset.idx = idx;
+      b.innerHTML =
+        '<span class="s-emoji">'+s.e+'</span>' +
+        '<span class="s-title">'+s.t+'</span>' +
+        '<span class="s-level">'+iconFor(s.l)+' '+s.l+'</span>';
+      b.addEventListener("click", ()=> loadStory(idx));
+      libGrid.appendChild(b);
+    });
+    if (shown === 0){
+      const d = document.createElement("div");
+      d.className = "lib-empty";
+      d.textContent = "No stories found. Try another word! 🔍";
+      libGrid.appendChild(d);
+    }
+  }
+
+  libSearch.addEventListener("input", renderGrid);
+
+  // ---------- Load a library story by index + page turner ----------
+  function loadStory(idx){
+    if (idx < 0 || idx >= LIBRARY.length) return;
+    currentIndex = idx;
+    const s = LIBRARY[idx];
+    document.querySelectorAll(".story-btn").forEach(x=>{
+      x.classList.toggle("active", parseInt(x.dataset.idx,10) === idx);
+    });
+    userText.value = s.x;
+    renderText(s.x, s.e + " " + s.t);
+    updateNav();
+    // keep the active card visible in the grid
+    const activeCard = libGrid.querySelector('.story-btn.active');
+    if (activeCard) activeCard.scrollIntoView({block:"nearest"});
+  }
+
+  function updateNav(){
+    if (currentIndex < 0){
+      navPos.textContent = "Your text";
+      prevBtn.disabled = true;
+      nextBtn.disabled = LIBRARY.length === 0;
+      nextBtn.textContent = "Library ▶️";
+      return;
+    }
+    navPos.textContent = (currentIndex + 1) + " / " + LIBRARY.length;
+    prevBtn.disabled = currentIndex <= 0;
+    nextBtn.disabled = currentIndex >= LIBRARY.length - 1;
+    nextBtn.textContent = "Next ▶️";
+  }
+
+  prevBtn.addEventListener("click", ()=>{
+    if (currentIndex > 0) loadStory(currentIndex - 1);
+  });
+  nextBtn.addEventListener("click", ()=>{
+    if (currentIndex < 0) loadStory(0);
+    else if (currentIndex < LIBRARY.length - 1) loadStory(currentIndex + 1);
+  });
+  surpriseBtn.addEventListener("click", ()=>{
+    let r = currentIndex;
+    if (LIBRARY.length > 1){
+      while (r === currentIndex) r = Math.floor(Math.random() * LIBRARY.length);
+    } else { r = 0; }
+    // make sure the chosen story is visible regardless of current filter/search
+    activeLevel = "All";
+    libSearch.value = "";
+    buildFilters();
+    renderGrid();
+    loadStory(r);
+    // little wiggle on the button for fun
+    surpriseBtn.classList.remove("pop"); void surpriseBtn.offsetWidth;
+  });
+
+  // Keyboard arrows for quick page turning
+  document.addEventListener("keydown", (e)=>{
+    if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+    if (e.key === "ArrowLeft" && !prevBtn.disabled) prevBtn.click();
+    if (e.key === "ArrowRight" && !nextBtn.disabled) nextBtn.click();
+  });
+
+  // ---------- Input actions ----------
+  loadBtn.addEventListener("click", ()=>{
+    const t = userText.value.trim();
+    document.querySelectorAll(".story-btn").forEach(x=>x.classList.remove("active"));
+    currentIndex = -1; updateNav();
+    if (!t){ renderText("Please paste or type a paragraph above, then tap Make It Readable.", "Your Reading"); return; }
+    renderText(t, "📖 Your Reading");
+  });
+
+  clearBtn.addEventListener("click", ()=>{
+    userText.value=""; userText.focus();
+    document.querySelectorAll(".story-btn").forEach(x=>x.classList.remove("active"));
+    currentIndex = -1; updateNav();
+    renderText("Paste a paragraph above to begin! ✍️", "Your Reading");
+  });
+
+  uploadBtn.addEventListener("click", ()=> fileInput.click());
+  fileInput.addEventListener("change", (e)=>{
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      userText.value = String(reader.result || "");
+      document.querySelectorAll(".story-btn").forEach(x=>x.classList.remove("active"));
+      currentIndex = -1; updateNav();
+      renderText(userText.value.trim() || "The file was empty.", "📂 " + file.name);
+    };
+    reader.readAsText(file);
+    fileInput.value = "";
+  });
+
+  // ---------- Controls ----------
+  readAllBtn.addEventListener("click", readStory);
+  stopBtn.addEventListener("click", stopAll);
+  colorBtn.addEventListener("click", ()=>{
+    colorsOn=!colorsOn;
+    colorBtn.textContent = colorsOn ? "🌈 Colors: On" : "⬛ Colors: Off";
+    refreshColors();
+  });
+
+  // Unlock speech on first gesture
+  document.body.addEventListener("pointerdown", function warm(){
+    if (synth){ try{ synth.resume(); }catch(e){} }
+    ensureAudio();
+    document.body.removeEventListener("pointerdown", warm);
+  }, { once:true });
+
+
+  // ================= TALK & PLAY (spoken English game) =================
+  const CONVOS = [
+    {e:"🏫",t:"At School",p:"Classroom",a:"Priya/Teacher",b:"Raju/Student",lines:[{s:"A",x:"The bell is ringing; class is about to start. We should go inside."},{s:"B",x:"Let's hurry up!"},{s:"A",x:"Good morning everyone."},{s:"B",x:"Good morning ma'am."},{s:"A",x:"How are you today?"},{s:"B",x:"We are fine. Thank you ma'am, and how about you?"},{s:"A",x:"Thank you children, I am fine."},{s:"B",x:"Ma'am, may I open the window?"},{s:"A",x:"Certainly, it's very hot here."}]},
+    {e:"⏰",t:"Coming to Class Late",p:"Classroom",a:"Charan",b:"Teacher",lines:[{s:"A",x:"Good morning ma'am. May I come in? I'm sorry for being late."},{s:"B",x:"Yes, come in."},{s:"A",x:"Thank you ma'am."},{s:"B",x:"Why are you late today?"},{s:"A",x:"I had been to a fair."},{s:"B",x:"What did you see there?"},{s:"A",x:"I saw a giant wheel, sweet shops and many other shops."}]},
+    {e:"🍅",t:"At the Vegetable Market",p:"Market",a:"Customer",b:"Seller",lines:[{s:"A",x:"Excuse me, do you have fresh vegetables?"},{s:"B",x:"Yes ma'am, all the vegetables are fresh."},{s:"A",x:"Could you please tell the cost of one kilo of tomato?"},{s:"B",x:"It's fifteen rupees."},{s:"A",x:"May I know the cost of ladyfinger?"},{s:"B",x:"It's forty rupees."},{s:"A",x:"Give me two kilos of tomato and one kilo of ladyfinger."},{s:"B",x:"Do you want anything else, ma'am?"},{s:"A",x:"Yes, give me one kilo of onion and potato each."},{s:"B",x:"Here it is."},{s:"A",x:"Here is the money."},{s:"B",x:"Thank you ma'am. Please visit again."}]},
+    {e:"🏦",t:"At the Bank",p:"Bank",a:"Student",b:"Manager",lines:[{s:"A",x:"Good morning sir."},{s:"B",x:"Good morning. Please take your seat."},{s:"A",x:"Thank you sir. I would like to open an account in your bank."},{s:"B",x:"Certainly. Do you like to open an account for scholarship?"},{s:"A",x:"Yes sir."},{s:"B",x:"First you need to fill this application form and submit some documents."},{s:"A",x:"What are the documents?"},{s:"B",x:"You need to submit your Aadhar and school ID card."},{s:"A",x:"How much money do I need to deposit, sir?"},{s:"B",x:"You need to deposit a minimum of five hundred rupees."},{s:"A",x:"No problem sir."},{s:"B",x:"Please fill this form and submit it at the cash counter."},{s:"A",x:"Sure sir. Thank you so much."},{s:"B",x:"You are most welcome."}]},
+    {e:"📮",t:"At the Post Office",p:"Post Office",a:"Student",b:"Postmaster",lines:[{s:"A",x:"Good morning, sir."},{s:"B",x:"Very good morning. What can I do for you?"},{s:"A",x:"Will you please give me a card and a stamp?"},{s:"B",x:"Yes, of course."},{s:"A",x:"May I know the use of a stamp?"},{s:"B",x:"A stamp shows that the amount is already paid for the postage."},{s:"A",x:"Please tell me the cost of this stamp."},{s:"B",x:"This stamp costs five rupees only."},{s:"A",x:"Okay, take this. Please give me the change."},{s:"B",x:"Here is your change. Have a nice day."},{s:"A",x:"Same here, bye."}]},
+    {e:"🏑",t:"Games at the Playground",p:"Playground",a:"Student",b:"Teacher",lines:[{s:"A",x:"Good morning sir."},{s:"B",x:"Good morning. How are you all?"},{s:"A",x:"Fine, thank you sir."},{s:"B",x:"Today, let us know about indoor and outdoor games."},{s:"A",x:"May I know about the indoor games, sir?"},{s:"B",x:"The games which are played inside are called indoor games."},{s:"A",x:"Please give some examples sir."},{s:"B",x:"Yes, they are chess, carrom, snake and ladder, and others."},{s:"A",x:"Could you tell me about outdoor games, sir?"},{s:"B",x:"The games played outside are called outdoor games, like cricket, hockey and football."},{s:"A",x:"Sir, today we would like to play hockey."},{s:"B",x:"Okay. Take the hockey sticks and go to the playground."},{s:"A",x:"Thank you sir."}]},
+    {e:"🩺",t:"At the Doctor",p:"Clinic",a:"Patient",b:"Doctor",lines:[{s:"A",x:"Hello, good morning sir."},{s:"B",x:"Very good morning, please come in."},{s:"A",x:"Sir, I am not feeling well."},{s:"B",x:"Please tell me what happened."},{s:"A",x:"I have been suffering from a stomach ache for the past three days."},{s:"B",x:"What did you eat?"},{s:"A",x:"I had special food at a marriage hall."},{s:"B",x:"Okay. It's due to a food infection."},{s:"A",x:"Is it, sir?"},{s:"B",x:"Yes, I will give you some tablets. You will be alright soon."},{s:"A",x:"Okay sir. Do I need to follow a diet?"},{s:"B",x:"No need for dieting, but avoid junk food."},{s:"A",x:"Okay sir, thank you."},{s:"B",x:"You are welcome."}]},
+    {e:"🚉",t:"At the Railway Station",p:"Railway Station",a:"Passenger",b:"Staff",lines:[{s:"A",x:"Excuse me, sir."},{s:"B",x:"Yes please. How can I help you?"},{s:"A",x:"Could you please tell me the schedule of Siddaganga Express?"},{s:"B",x:"Sure, it arrives at two p.m. and will depart in two minutes."},{s:"A",x:"May I know the fare from Tumkur to Hubli for second class?"},{s:"B",x:"It's one hundred and fifty rupees. Do you need any other help?"},{s:"A",x:"Yes sir, on which platform does it arrive?"},{s:"B",x:"It is arriving at platform number three today."},{s:"A",x:"Thank you very much sir."},{s:"B",x:"It's my pleasure."}]},
+    {e:"🚌",t:"On the Bus",p:"Bus Stop",a:"Passenger",b:"Conductor",lines:[{s:"A",x:"Excuse me, sir."},{s:"B",x:"Yes, please."},{s:"A",x:"I want to go to Mysore today. At what time will the bus be departing?"},{s:"B",x:"The bus will depart sharply at nine thirty a.m."},{s:"A",x:"Fine sir. When will it reach Mysore?"},{s:"B",x:"It will reach around one p.m."},{s:"A",x:"That would be fine. Thank you sir."},{s:"B",x:"You are welcome. Please come aboard. We will be leaving now."},{s:"A",x:"I want two tickets to Bengaluru, sir."},{s:"B",x:"Okay. That would be two hundred and twenty rupees."},{s:"A",x:"Here it is."},{s:"B",x:"Here is your ticket. Thank you."}]},
+    {e:"📚",t:"At the Library",p:"Library",a:"Student",b:"Librarian",lines:[{s:"A",x:"Good morning ma'am."},{s:"B",x:"Good morning. How can I help you?"},{s:"A",x:"I'm looking for a book. I'm searching for a good dictionary for my project."},{s:"B",x:"We have many dictionaries. Which one do you want?"},{s:"A",x:"I don't know exactly, ma'am. Could you please suggest a good one?"},{s:"B",x:"I recommend the Standard Dictionary. It is easy to use."},{s:"A",x:"That would be perfect for my project, ma'am."},{s:"B",x:"I will bring one for you. Please wait here."},{s:"A",x:"Sure ma'am."},{s:"B",x:"Here it is. Take care of the book and all the best for your project."},{s:"A",x:"Thank you ma'am for your help."},{s:"B",x:"Pleasure is all mine, child."}]},
+    {e:"📖",t:"At the Bookshop",p:"Bookshop",a:"Student",b:"Bookseller",lines:[{s:"A",x:"Good evening sir."},{s:"B",x:"Very good evening, please come in."},{s:"A",x:"Could you please name some story books?"},{s:"B",x:"Yes sure. What type of books do you need?"},{s:"A",x:"I need moral story books like Panchatantra and Arabian Nights."},{s:"B",x:"Oh! You have good knowledge about books."},{s:"A",x:"What is the cost of this book, sir?"},{s:"B",x:"It's only twenty rupees."},{s:"A",x:"Here it is. Thank you so much."},{s:"B",x:"Pleasure is mine."}]},
+    {e:"🚆",t:"Two Travellers",p:"On a Journey",a:"Traveller One",b:"Traveller Two",lines:[{s:"A",x:"Good morning, sir."},{s:"B",x:"Very good morning. Where are you from, sir?"},{s:"A",x:"I am from Delhi. And you, sir?"},{s:"B",x:"I am from Mumbai. May I ask where you are going?"},{s:"A",x:"I am going to Bengaluru to attend my nephew's wedding. And you?"},{s:"B",x:"I am also going to Bengaluru to attend a meeting."},{s:"A",x:"Oh, that's fine, sir."},{s:"B",x:"How many days will you stay in Bengaluru?"},{s:"A",x:"I will be there for two days."},{s:"B",x:"Oh, that's fine. Enjoy the function."},{s:"A",x:"Thank you, I wish you the same. Nice meeting you."},{s:"B",x:"Thank you. Bye."}]},
+    {e:"🛍️",t:"At the Stationery Shop",p:"Stationery Shop",a:"Customer",b:"Sales Boy",lines:[{s:"A",x:"Hello sir."},{s:"B",x:"Hello ma'am, how can I help you?"},{s:"A",x:"I am looking for good pens."},{s:"B",x:"Are you looking for any specific type?"},{s:"A",x:"Yeah, could I have some ball point pens please?"},{s:"B",x:"Sure ma'am, which colour would you prefer?"},{s:"A",x:"I need both blue and red pens."},{s:"B",x:"How many pens do you need?"},{s:"A",x:"I need ten blue and ten red pens."},{s:"B",x:"Here are your pens, ma'am."},{s:"A",x:"How much should I pay for these?"},{s:"B",x:"It is two hundred rupees, ma'am."},{s:"A",x:"Here is the money."},{s:"B",x:"Thank you for shopping, ma'am. Visit again."}]},
+    {e:"🍽️",t:"At the Restaurant",p:"Hotel",a:"Customer",b:"Waiter",lines:[{s:"B",x:"Welcome to our restaurant, sir. How can I help you?"},{s:"A",x:"Can I get a table, please?"},{s:"B",x:"Of course, please follow me, sir."},{s:"A",x:"Thank you. Could I get the menu card, please?"},{s:"B",x:"Sure sir, here it is."},{s:"A",x:"I would like a bowl of tomato soup and a plate of fried rice."},{s:"B",x:"Sure sir. Anything else?"},{s:"A",x:"Nothing. Just give me the bill."},{s:"B",x:"Here is the bill, sir."},{s:"A",x:"Thank you."}]},
+    {e:"🛒",t:"At the Grocery Shop",p:"Grocery Shop",a:"Customer",b:"Seller",lines:[{s:"B",x:"Welcome to our shop, sir."},{s:"A",x:"Thank you."},{s:"B",x:"How can I help you, sir?"},{s:"A",x:"I want to buy some groceries. Here's the list. Could you pack it for me?"},{s:"B",x:"Of course, sir. I will pack it for you."},{s:"A",x:"Thank you."},{s:"B",x:"Would you prefer a bag to carry all these things?"},{s:"A",x:"Yeah sir, I would like one."},{s:"B",x:"Here is your bill, sir."},{s:"A",x:"I don't have cash. Shall I use my card?"},{s:"B",x:"Of course, sir. You can."},{s:"A",x:"I paid. Please check it once."},{s:"B",x:"Thank you sir. Here is your receipt."}]},
+    {e:"🏆",t:"Two Players Before a Match",p:"Sports Event",a:"Pavan",b:"Raju",lines:[{s:"A",x:"Hi! Raju."},{s:"B",x:"Hello Pavan."},{s:"A",x:"Is our match today or tomorrow?"},{s:"B",x:"It's today evening, Pavan."},{s:"A",x:"The opponents are very strong, Raju!"},{s:"B",x:"Yes Pavan. We need to play very carefully. We must win the match."},{s:"A",x:"Of course, we have to win. I'm very confident."},{s:"B",x:"Be strong, Pavan. Let's practise again."},{s:"A",x:"Okay Raju, I will call everyone."},{s:"B",x:"Let's start practice."}]},
+    {e:"🧭",t:"Tourist and Guide",p:"Mysore",a:"Tourist",b:"Guide",lines:[{s:"B",x:"Hello, good morning. I'm Gopal, your tourist guide. Welcome to Mysore, sir."},{s:"A",x:"Hello, good morning Gopal. I'm Johnson, from America. I'm happy to visit Mysore."},{s:"B",x:"Is it your first visit to Mysore, sir?"},{s:"A",x:"Yes. I need your help to go around here."},{s:"B",x:"Okay. It's my pleasure to guide you."},{s:"A",x:"Can you please tell me the famous tourist places in Mysore?"},{s:"B",x:"By all means. We have many best places in Mysore."},{s:"A",x:"Wow! It's wonderful."},{s:"B",x:"We have Mysore Palace, Brindavan Garden, Chamundeshwari Temple, Mysore Zoo, and many more."},{s:"A",x:"That's fine. Where shall we go first?"},{s:"B",x:"It's the Mysore Palace."}]},
+    {e:"🦓",t:"Friends at the Zoo",p:"Zoo",a:"Nihal",b:"Sudesh",lines:[{s:"A",x:"Hi, Sudesh."},{s:"B",x:"Hello, Nihal."},{s:"A",x:"What is our plan for tomorrow? Where are we going?"},{s:"B",x:"Shall we visit a zoo?"},{s:"A",x:"Okay, it's fine. Is it your first visit to a zoo?"},{s:"B",x:"No. I visited with my uncle last year."},{s:"A",x:"Is there any entry fee?"},{s:"B",x:"Yes, we have to get an entry ticket to enter the zoo."},{s:"A",x:"Look, a very big bird, and so tall!"},{s:"B",x:"That's an ostrich, one of the world's largest birds."},{s:"A",x:"Incredible! Can an ostrich fly?"},{s:"B",x:"No, they can't fly, because they are heavy and have short wings."},{s:"A",x:"What do they eat?"},{s:"B",x:"They eat plants, seeds, insects and other small creatures."},{s:"A",x:"I think these are beautiful birds. I am thrilled to see them!"},{s:"B",x:"That's nice. Let's move to the next place."}]},
+    {e:"👑",t:"Akbar and Birbal",p:"Royal Court",a:"Akbar",b:"Birbal",lines:[{s:"A",x:"Dear Birbal, I had a nightmare. I dreamt that all my teeth had fallen out except one."},{s:"B",x:"Your Majesty! Please tell me, what did the astrologers say?"},{s:"A",x:"They told me that all my relatives will die before me. I'm worried."},{s:"B",x:"Please tell me the dream again, sir."},{s:"A",x:"I have told you the whole dream."},{s:"B",x:"Your Majesty, the meaning is that you will live longer than your relatives."},{s:"A",x:"You are a genius! Thank you for your explanation."},{s:"B",x:"It is my duty to serve you, Your Majesty."}]},
+    {e:"🐰",t:"Rabbit and Tortoise",p:"Forest",a:"Rabbit",b:"Tortoise",lines:[{s:"A",x:"Hello Torty, how are you?"},{s:"B",x:"Hello Rabbit, I am fine. Thank you."},{s:"A",x:"Are you free today?"},{s:"B",x:"Yes. I am free."},{s:"A",x:"Shall we play a game?"},{s:"B",x:"Sure. I am also getting bored."},{s:"A",x:"Which game shall we play?"},{s:"B",x:"We shall play a running race."},{s:"A",x:"It's okay. Come, let's play."},{s:"B",x:"Ready, steady, go!"}]},
+  ];
+
+  // avatar pools by speaker
+  const AV_A = ["🧒","👦","👧","🧑","👨","🙋","🧔","👩"];
+  const AV_B = ["👩‍🏫","🧑‍🍳","👨‍⚕️","🧑‍💼","👮","🧑‍🌾","👨‍🔧","👵"];
+
+  const tabRead = document.getElementById("tabRead");
+  const tabTalk = document.getElementById("tabTalk");
+  const viewRead = document.getElementById("viewRead");
+  const viewTalk = document.getElementById("viewTalk");
+  const sceneGrid = document.getElementById("sceneGrid");
+  const scenePicker = document.getElementById("scenePicker");
+  const stage = document.getElementById("stage");
+  const backBtn = document.getElementById("backBtn");
+  const stageTitle = document.getElementById("stageTitle");
+  const scorePill = document.getElementById("scorePill");
+  const chatEl = document.getElementById("chat");
+  const playBtn = document.getElementById("playBtn");
+  const turnBtn = document.getElementById("turnBtn");
+  const restartBtn = document.getElementById("restartBtn");
+  const rolePick = document.getElementById("rolePick");
+  const roleBtns = document.getElementById("roleBtns");
+  const yourLine = document.getElementById("yourLine");
+  const ylText = document.getElementById("ylText");
+  const ylHear = document.getElementById("ylHear");
+  const ylDone = document.getElementById("ylDone");
+  const ylMic = document.getElementById("ylMic");
+  const ylFeedback = document.getElementById("ylFeedback");
+  const winBanner = document.getElementById("winBanner");
+  const actorA = document.getElementById("actorA");
+  const actorB = document.getElementById("actorB");
+  const avAEl = document.getElementById("avA"), nmAEl = document.getElementById("nmA");
+  const avBEl = document.getElementById("avB"), nmBEl = document.getElementById("nmB");
+  const progLabel = document.getElementById("progLabel");
+  const progFill = document.getElementById("progFill");
+  const resetProg = document.getElementById("resetProg");
+
+  let curConvo = null, avA = "🙂", avB = "🙂";
+  let curSceneIdx = -1;
+  let stars = 0;
+  let playMode = "idle";   // idle | listen | play
+  let myRole = "A";
+  let step = 0;
+  let playToken = 0;       // cancels old playback loops
+
+  // ---------- Saved progress (localStorage) ----------
+  const SAVE_KEY = "readingBuddyProgress_v1";
+  let progress = loadProgress();
+
+  function loadProgress(){
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw){ const p = JSON.parse(raw); return { stars: p.stars||0, done: p.done||{} }; }
+    } catch(e){}
+    return { stars: 0, done: {} };
+  }
+  function saveProgress(){
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(progress)); } catch(e){}
+  }
+  function addTotalStars(n){
+    progress.stars += n;
+    saveProgress();
+    updateProgressUI();
+  }
+  function markSceneDone(idx){
+    if (!progress.done[idx]){
+      progress.done[idx] = true;
+      saveProgress();
+      buildScenes();
+      updateProgressUI();
+      onSceneComplete();
+    }
+  }
+  function updateProgressUI(){
+    const total = CONVOS.length;
+    const doneCount = Object.keys(progress.done).filter(k=>progress.done[k]).length;
+    if (progLabel) progLabel.textContent = "🪙 " + wallet.coins + " · ⭐ " + progress.stars + " stars · ✓ " + doneCount + "/" + total + " scenes";
+    if (progFill) progFill.style.width = Math.round((doneCount/total)*100) + "%";
+  }
+
+  // ---------- Speech Recognition (🎤 speaking check) ----------
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recog = null, recognizing = false;
+
+  function normalize(s){
+    return s.toLowerCase()
+      .replace(/[^a-z0-9'\s]/g," ")
+      .replace(/\s+/g," ").trim();
+  }
+  // word overlap score 0..1 between what was said and the target line
+  function matchScore(said, target){
+    const a = normalize(said).split(" ").filter(Boolean);
+    const b = normalize(target).split(" ").filter(Boolean);
+    if (!b.length) return 0;
+    const bag = {};
+    a.forEach(w=> bag[w] = (bag[w]||0)+1);
+    let hit = 0;
+    b.forEach(w=>{ if (bag[w]>0){ hit++; bag[w]--; } });
+    return hit / b.length;
+  }
+
+  // Build a tappable bubble (reuses word-tap speaking)
+  function bubbleWords(text){
+    const frag = document.createDocumentFragment();
+    const tokens = text.split(/(\s+)/);
+    let ci = 0;
+    tokens.forEach(tok=>{
+      if (tok === "") return;
+      if (/^\s+$/.test(tok)){ frag.appendChild(document.createTextNode(" ")); return; }
+      const span = document.createElement("span");
+      span.className = "word"; span.textContent = tok;
+      const spoken = cleanWord(tok);
+      if (spoken){ span.dataset.color = COLORS[ci % COLORS.length]; ci++; }
+      if (colorsOn && span.dataset.color) span.style.color = span.dataset.color;
+      span.addEventListener("click",(e)=>{ e.stopPropagation(); onWordTap(span, spoken); });
+      frag.appendChild(span);
+    });
+    return frag;
+  }
+
+  function speakerAvatar(s){ return s === "A" ? avA : avB; }
+  function speakerName(s){ return s === "A" ? curConvo.a : curConvo.b; }
+
+  function addBubble(line, isYou){
+    const side = line.s === "A" ? "left" : "right";
+    const row = document.createElement("div");
+    row.className = "bubble-row " + side;
+    const av = document.createElement("div");
+    av.className = "bubble-av"; av.textContent = speakerAvatar(line.s);
+    const b = document.createElement("div");
+    b.className = "bubble" + (isYou ? " you" : "");
+    b.appendChild(bubbleWords(line.x));
+    b.addEventListener("click", ()=> speakBubble(b, line.x));
+    row.appendChild(av); row.appendChild(b);
+    chatEl.appendChild(row);
+    row.scrollIntoView({behavior:"smooth", block:"end"});
+    return b;
+  }
+
+  function speakBubble(b, text){
+    if (synth) synth.cancel();
+    document.querySelectorAll(".bubble.speaking-bubble").forEach(x=>x.classList.remove("speaking-bubble"));
+    b.classList.add("speaking-bubble");
+    speak(text, { rate: baseRate, onend: ()=> b.classList.remove("speaking-bubble") });
+  }
+
+  function highlightTurn(s){
+    actorA.classList.toggle("turn", s === "A");
+    actorB.classList.toggle("turn", s === "B");
+  }
+
+  function setStars(n){ stars = n; scorePill.textContent = "⭐ " + stars; }
+
+  // ----- Build scene grid -----
+  function buildScenes(){
+    sceneGrid.innerHTML = "";
+    CONVOS.forEach((c, idx)=>{
+      const b = document.createElement("button");
+      b.className = "scene-card" + (progress.done[idx] ? " done" : "");
+      b.innerHTML = '<span class="sc-done">✓</span>' +
+                    '<span class="sc-emoji">'+c.e+'</span>' +
+                    '<span class="sc-title">'+c.t+'</span>' +
+                    '<span class="sc-place">📍 '+c.p+'</span>';
+      b.addEventListener("click", ()=> openScene(idx));
+      sceneGrid.appendChild(b);
+    });
+  }
+
+  function openScene(idx){
+    curConvo = CONVOS[idx];
+    curSceneIdx = idx;
+    avA = AV_A[idx % AV_A.length];
+    avB = AV_B[idx % AV_B.length];
+    avAEl.textContent = avA; nmAEl.textContent = curConvo.a;
+    avBEl.textContent = avB; nmBEl.textContent = curConvo.b;
+    stageTitle.textContent = curConvo.e + " " + curConvo.t;
+    setStars(0);
+    resetStage();
+    scenePicker.style.display = "none";
+    stage.classList.add("active");
+    stage.scrollIntoView({behavior:"smooth", block:"start"});
+  }
+
+  function resetStage(){
+    playToken++;
+    if (synth) synth.cancel();
+    stopRecog();
+    playMode = "idle";
+    step = 0;
+    chatEl.innerHTML = "";
+    yourLine.classList.remove("show");
+    rolePick.classList.remove("show");
+    winBanner.classList.remove("show");
+    clearFeedback();
+    highlightTurn(null);
+  }
+
+  // ----- Listen mode: auto-play whole conversation -----
+  function listenMode(){
+    resetStage();
+    playMode = "listen";
+    const token = playToken;
+    let i = 0;
+    (function next(){
+      if (token !== playToken) return;
+      if (i >= curConvo.lines.length){ highlightTurn(null); celebrate("🎉 Great listening!"); return; }
+      const line = curConvo.lines[i];
+      highlightTurn(line.s);
+      const b = addBubble(line, false);
+      b.classList.add("speaking-bubble");
+      speak(line.x, { rate: baseRate, onend: ()=>{
+        if (token !== playToken) return;
+        b.classList.remove("speaking-bubble");
+        i++; setTimeout(next, 350);
+      }});
+      // safety if speech unavailable
+      if (!synth){ b.classList.remove("speaking-bubble"); i++; setTimeout(next, 900); }
+    })();
+  }
+
+  // ----- Play mode: child says one role's lines -----
+  function startPlay(){
+    resetStage();
+    rolePick.classList.add("show");
+    roleBtns.innerHTML = "";
+    [["A", curConvo.a, avA], ["B", curConvo.b, avB]].forEach(([key,name,av])=>{
+      const btn = document.createElement("button");
+      btn.textContent = av + " Be " + name;
+      btn.addEventListener("click", ()=>{ myRole = key; rolePick.classList.remove("show"); runPlay(); });
+      roleBtns.appendChild(btn);
+    });
+  }
+
+  function runPlay(){
+    playMode = "play";
+    step = 0;
+    chatEl.innerHTML = "";
+    winBanner.classList.remove("show");
+    advancePlay();
+  }
+
+  function advancePlay(){
+    const token = playToken;
+    if (step >= curConvo.lines.length){
+      highlightTurn(null);
+      yourLine.classList.remove("show");
+      const total = curConvo.lines.filter(l=>l.s===myRole).length;
+      markSceneDone(curSceneIdx);
+      celebrate("🎉 Scene complete! +" + total + " lines & bonus 🪙! Keep playing to save up for the Mega Shop!");
+      return;
+    }
+    const line = curConvo.lines[step];
+    highlightTurn(line.s);
+    if (line.s === myRole){
+      // child's turn
+      clearFeedback();
+      yourLine.classList.add("show");
+      ylText.textContent = "“" + line.x + "”";
+      yourLine.scrollIntoView({behavior:"smooth", block:"center"});
+    } else {
+      // partner's turn — app speaks it
+      yourLine.classList.remove("show");
+      const b = addBubble(line, false);
+      b.classList.add("speaking-bubble");
+      speak(line.x, { rate: baseRate, onend: ()=>{
+        if (token !== playToken) return;
+        b.classList.remove("speaking-bubble");
+        step++; setTimeout(advancePlay, 300);
+      }});
+      if (!synth){ b.classList.remove("speaking-bubble"); step++; setTimeout(advancePlay, 800); }
+    }
+  }
+
+  // ----- Feedback helpers -----
+  function clearFeedback(){ ylFeedback.className = "yl-feedback"; ylFeedback.innerHTML = ""; }
+  function setFeedback(kind, html){ ylFeedback.className = "yl-feedback " + kind; ylFeedback.innerHTML = html; }
+
+  // advance after the child successfully said a line
+  function lineSuccess(line, earned){
+    const b = addBubble(line, true);
+    setStars(stars + earned);
+    addTotalStars(earned);
+    markReadingDay();
+    addCoins(earned === 2 ? parentSettings.coinLinePerfect : parentSettings.coinLineSkip, earned === 2 ? "perfect speaking!" : "nice try!");
+    sparkle();
+    yourLine.classList.remove("show");
+    clearFeedback();
+    step++;
+    setTimeout(advancePlay, 350);
+  }
+
+  ylHear.addEventListener("click", ()=>{
+    const line = curConvo.lines[step];
+    if (line) speak(line.x, { rate: baseRate });
+  });
+
+  // Skip / I said it (no mic) — gentle credit
+  ylDone.addEventListener("click", ()=>{
+    const line = curConvo.lines[step];
+    if (!line) return;
+    stopRecog();
+    lineSuccess(line, 1);
+  });
+
+  // ----- 🎤 Speaking check -----
+  function stopRecog(){
+    if (recog && recognizing){ try{ recog.stop(); }catch(e){} }
+    recognizing = false;
+    ylMic.classList.remove("listening");
+    ylMic.textContent = "🎤 Say it";
+  }
+
+  function startRecog(){
+    const line = curConvo.lines[step];
+    if (!line) return;
+    if (!SR){
+      setFeedback("close", "🎤 Mic check isn't supported in this browser. Use ✅ when you've said it! (Try Chrome.)");
+      return;
+    }
+    if (synth) synth.cancel();
+    if (recognizing){ stopRecog(); return; }
+
+    recog = new SR();
+    recog.lang = (chosenVoice && chosenVoice.lang) || "en-US";
+    recog.interimResults = false;
+    recog.maxAlternatives = 5;
+
+    recognizing = true;
+    ylMic.classList.add("listening");
+    ylMic.textContent = "🔴 Listening…";
+    setFeedback("close", "👂 Listening… say your line!");
+
+    recog.onresult = (ev)=>{
+      let best = 0, heard = "";
+      for (let i=0;i<ev.results.length;i++){
+        for (let j=0;j<ev.results[i].length;j++){
+          const alt = ev.results[i][j].transcript;
+          const sc = matchScore(alt, line.x);
+          if (sc > best){ best = sc; heard = alt; }
+        }
+      }
+      const pct = Math.round(best*100);
+      const heardHtml = '<div class="heard">You said: "' + (heard||"…") + '"</div>';
+      if (best >= 0.7){
+        setFeedback("good", "🌟 Perfect! That's right! (" + pct + "% match)" + heardHtml);
+        speak("Well done!", { rate: baseRate });
+        setTimeout(()=> lineSuccess(line, 2), 700);   // 2 stars for speaking it!
+      } else if (best >= 0.4){
+        setFeedback("close", "🙂 So close! Try once more, or tap 🔊 to hear it. (" + pct + "% match)" + heardHtml);
+      } else {
+        setFeedback("miss", "💪 Let's try again! Tap 🔊 to hear it first." + heardHtml);
+      }
+    };
+    recog.onerror = (ev)=>{
+      if (ev.error === "not-allowed" || ev.error === "service-not-allowed"){
+        setFeedback("miss", "🎤 Please allow microphone access to use the speaking check. You can still tap ✅ instead.");
+      } else if (ev.error === "no-speech"){
+        setFeedback("close", "🤫 I didn't hear anything. Tap 🎤 and say your line!");
+      } else {
+        setFeedback("close", "🎤 Mic stopped. Tap 🎤 to try again.");
+      }
+    };
+    recog.onend = ()=>{ recognizing = false; ylMic.classList.remove("listening"); ylMic.textContent = "🎤 Say it"; };
+
+    try { recog.start(); }
+    catch(e){ recognizing = false; ylMic.classList.remove("listening"); ylMic.textContent = "🎤 Say it"; }
+  }
+
+  ylMic.addEventListener("click", startRecog);
+  if (!SR){ ylMic.title = "Speech recognition not supported here — try Chrome"; }
+
+  playBtn.addEventListener("click", listenMode);
+  turnBtn.addEventListener("click", startPlay);
+  restartBtn.addEventListener("click", ()=>{ setStars(0); resetStage(); });
+  resetProg.addEventListener("click", ()=>{
+    if (confirm("Reset all saved stars and completed scenes?")){
+      progress = { stars: 0, done: {} };
+      saveProgress();
+      buildScenes();
+      updateProgressUI();
+    }
+  });
+  backBtn.addEventListener("click", ()=>{
+    resetStage();
+    stage.classList.remove("active");
+    scenePicker.style.display = "block";
+    scenePicker.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+
+  function celebrate(msg){
+    winBanner.textContent = msg;
+    winBanner.classList.add("show");
+    confettiBurst();
+  }
+
+
+  // ----- Tab switching -----
+  function showTab(which){
+    tabRead.classList.toggle("active", which === "read");
+    tabTalk.classList.toggle("active", which === "talk");
+    tabShop.classList.toggle("active", which === "shop");
+    tabTrophy.classList.toggle("active", which === "trophy");
+    viewRead.classList.toggle("active", which === "read");
+    viewTalk.classList.toggle("active", which === "talk");
+    viewShop.classList.toggle("active", which === "shop");
+    viewTrophy.classList.toggle("active", which === "trophy");
+    if (which === "shop"){ buildShopFilters(); buildShop(); updateWalletUI(); }
+    if (which === "trophy"){ buildBadges(); buildEquipRow(); }
+    if (synth) synth.cancel();
+    playToken++;
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+  tabRead.addEventListener("click", ()=> showTab("read"));
+  tabTalk.addEventListener("click", ()=> showTab("talk"));
+  tabShop.addEventListener("click", ()=> showTab("shop"));
+  tabTrophy.addEventListener("click", ()=> showTab("trophy"));
+
+  // ----- Confetti / sparkle -----
+  const cvs = document.getElementById("confetti");
+  const ctx = cvs.getContext ? cvs.getContext("2d") : null;
+  let parts = [], rafOn = false;
+  function sizeCanvas(){ if(!cvs) return; cvs.width = innerWidth; cvs.height = innerHeight; }
+  window.addEventListener("resize", sizeCanvas); sizeCanvas();
+  const CONFCOL = ["#ff6b6b","#ffd43b","#51cf66","#4dabf7","#9775fa","#f783ac"];
+  function confettiBurst(){ if(!ctx) return; for(let i=0;i<120;i++) parts.push(mkPart(innerWidth/2, innerHeight/3)); runLoop(); }
+  function sparkle(){ if(!ctx) return; for(let i=0;i<30;i++) parts.push(mkPart(innerWidth/2, innerHeight/2)); runLoop(); }
+  function mkPart(x,y){
+    return { x, y, vx:(Math.random()-0.5)*9, vy:Math.random()*-9-3,
+      g:0.28, s:6+Math.random()*7, c:CONFCOL[(Math.random()*CONFCOL.length)|0],
+      life:60+Math.random()*40, rot:Math.random()*6, vr:(Math.random()-0.5)*0.4 };
+  }
+  function runLoop(){ if(rafOn) return; rafOn = true; requestAnimationFrame(tick); }
+  function tick(){
+    ctx.clearRect(0,0,cvs.width,cvs.height);
+    parts = parts.filter(p=>p.life>0);
+    parts.forEach(p=>{
+      p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.life--; p.rot+=p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s); ctx.restore();
+    });
+    if (parts.length){ requestAnimationFrame(tick); } else { rafOn=false; ctx.clearRect(0,0,cvs.width,cvs.height); }
+  }
+
+  // ----- init talk view -----
+  buildScenes();
+  updateProgressUI();
+
+  // ---------- Start ----------
+  applyMissedDayPenalties();
+  updateWalletUI();
+  buildShopFilters();
+  buildShop();
+  buildBadges();
+  buildEquipRow();
+  buildFilters();
+  renderGrid();
+  loadStory(0);
+  if (!wallet.lastReadDate){
+    setTimeout(()=> showToast("Welcome! You got 30 🪙 — read & play to earn more! 🎉", "prize"), 800);
+  }
+})();
+</script>
+</body>
+</html>
