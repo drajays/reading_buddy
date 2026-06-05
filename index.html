@@ -1804,6 +1804,7 @@
   const navPos     = document.getElementById("navPos");
 
   const synth = window.speechSynthesis;
+  const IS_EDGE = /Edg\//.test(navigator.userAgent);
   let colorsOn = true;
   let tappedWords = new Set();
   let chosenVoice = null;
@@ -1819,8 +1820,11 @@
   function isEnglish(v){ return /^en(-|_)/i.test(v.lang) || /english/i.test(v.name); }
 
   function defaultVoiceIndex(list){
-    const prefer = ["google us english","jenny","aria","samantha","microsoft ava",
-                    "microsoft emma","zira","karen","moira","tessa","fiona","neerja","aarti"];
+    const prefer = IS_EDGE
+      ? ["microsoft jenny online","microsoft aria online","microsoft jenny","microsoft aria",
+         "microsoft zira","microsoft david","microsoft mark","google us english"]
+      : ["google us english","jenny","aria","samantha","microsoft ava",
+         "microsoft emma","zira","karen","moira","tessa","fiona","neerja","aarti"];
     for (const p of prefer){
       const i = list.findIndex(v => v.name.toLowerCase().includes(p));
       if (i !== -1) return i;
@@ -1865,11 +1869,25 @@
     return o;
   }
 
-  if (synth) {
+  function pollVoices(){
+    if (!synth) return;
     buildVoiceList();
-    synth.onvoiceschanged = buildVoiceList;
-    setTimeout(buildVoiceList, 400);
-    setTimeout(buildVoiceList, 1200);
+    if (!synth.getVoices().length && noVoice){
+      noVoice.style.display = "block";
+      noVoice.textContent = IS_EDGE
+        ? "🔊 Loading voices… Tap Test sound, or pick Microsoft Jenny / Aria in the voice list."
+        : "😢 Your browser can't talk right now. Try Chrome, Edge, or Safari!";
+    } else if (noVoice && synth.getVoices().length){
+      noVoice.style.display = "none";
+    }
+  }
+
+  if (synth) {
+    synth.onvoiceschanged = pollVoices;
+    setTimeout(pollVoices, IS_EDGE ? 200 : 50);
+    setTimeout(pollVoices, 600);
+    setTimeout(pollVoices, 1500);
+    setTimeout(pollVoices, 3000);
   }
 
   voiceSel.addEventListener("change", ()=>{
@@ -1878,54 +1896,86 @@
   });
   speedSel.addEventListener("change", ()=>{ baseRate = parseFloat(speedSel.value) || 0.9; });
   testBtn.addEventListener("click", ()=>{
-    if (synth) synth.cancel();
-    speak("Hi! I am your reading buddy. Tap any word and I will say it.");
+    speak("Hi! I am your reading buddy. Tap any word and I will say it.", { cancelFirst: true });
   });
 
   function unlockSpeech(){
     if (!synth) return;
-    try {
-      synth.resume();
-      synth.pause();
-      synth.resume();
-    } catch(e){}
-    if (!allVoices.length) buildVoiceList();
+    try { synth.resume(); } catch(e){}
+    // pause/resume breaks speech on Edge & Android — only use on desktop Chrome/Safari
+    if (!IS_EDGE && !/Android|iPhone|iPad/i.test(navigator.userAgent)){
+      try { synth.pause(); synth.resume(); } catch(e){}
+    }
   }
 
-  function pickVoice(){
-    const voices = synth ? synth.getVoices() : [];
+  function getFreshVoice(){
+    if (!synth) return null;
+    const voices = synth.getVoices();
     if (!voices.length) return null;
-    if (chosenVoice && voices.some(v => v.name === chosenVoice.name)) return chosenVoice;
+    if (chosenVoice){
+      const fresh = voices.find(v => v.name === chosenVoice.name);
+      if (fresh) return fresh;
+    }
     const list = voices.filter(isEnglish);
     const pool = list.length ? list : voices;
-    chosenVoice = pool[defaultVoiceIndex(pool)] || voices[0];
-    return chosenVoice;
+    const v = pool[defaultVoiceIndex(pool)] || voices[0];
+    chosenVoice = v;
+    return v;
+  }
+
+  function bindWordTap(span, spoken){
+    const handler = ()=> onWordTap(span, spoken);
+    if (IS_EDGE){
+      span.addEventListener("click", handler);
+    } else {
+      span.addEventListener("pointerdown", (e)=>{ e.preventDefault(); handler(); });
+    }
   }
 
   function speak(text, opts) {
     if (!synth || !text) return;
     opts = opts || {};
     unlockSpeech();
-    const voice = pickVoice();
+    const defer = IS_EDGE ? 120 : 60;
 
-    function doSpeak(){
+    function doSpeak(noVoiceRetry){
       const u = new SpeechSynthesisUtterance(text);
-      if (voice) u.voice = voice;
-      u.lang = (voice && voice.lang) || "en-US";
+      const voice = noVoiceRetry ? null : getFreshVoice();
+      if (voice){
+        try { u.voice = voice; } catch(e){}
+        u.lang = voice.lang || "en-US";
+      } else {
+        u.lang = "en-US";
+      }
       u.rate = (typeof opts.rate === "number") ? opts.rate : baseRate;
       u.pitch = 1.1; u.volume = 1;
       if (opts.onstart) u.onstart = opts.onstart;
-      if (opts.onend) u.onend = opts.onend;
-      if (opts.onerror) u.onerror = opts.onerror;
+      const userOnEnd = opts.onend;
+      u.onend = userOnEnd || null;
+      u.onerror = (ev)=>{
+        if (!noVoiceRetry){
+          setTimeout(()=> doSpeak(true), 80);
+          return;
+        }
+        if (opts.onerror) opts.onerror(ev);
+        if (noVoice && IS_EDGE){
+          noVoice.style.display = "block";
+          noVoice.textContent = "😢 Speech failed — try picking Microsoft Jenny or Aria in the voice list, then tap Test sound.";
+        }
+      };
       synth.speak(u);
     }
 
-    // Chrome/Safari: cancel() then immediate speak() drops the utterance — defer slightly
+    function queueSpeak(){
+      if (IS_EDGE) setTimeout(()=> doSpeak(false), 10);
+      else doSpeak(false);
+    }
+
     if (opts.cancelFirst !== false && (synth.speaking || synth.pending)){
       synth.cancel();
-      setTimeout(doSpeak, 60);
+      setTimeout(queueSpeak, defer);
     } else {
-      doSpeak();
+      queueSpeak();
     }
   }
 
@@ -1955,10 +2005,7 @@
       const spoken = cleanWord(tok);
       if (spoken) { span.dataset.color = COLORS[colorIndex % COLORS.length]; colorIndex++; }
       applyColor(span);
-      span.addEventListener("pointerdown", (e)=>{
-        e.preventDefault();
-        onWordTap(span, spoken);
-      });
+      bindWordTap(span, spoken);
       passageEl.appendChild(span);
     });
     passageEl.scrollIntoView({behavior:"smooth", block:"start"});
@@ -2319,7 +2366,11 @@
       const spoken = cleanWord(tok);
       if (spoken){ span.dataset.color = COLORS[ci % COLORS.length]; ci++; }
       if (colorsOn && span.dataset.color) span.style.color = span.dataset.color;
-      span.addEventListener("pointerdown",(e)=>{ e.stopPropagation(); e.preventDefault(); onWordTap(span, spoken); });
+      if (IS_EDGE){
+        span.addEventListener("click",(e)=>{ e.stopPropagation(); onWordTap(span, spoken); });
+      } else {
+        span.addEventListener("pointerdown",(e)=>{ e.stopPropagation(); e.preventDefault(); onWordTap(span, spoken); });
+      }
       frag.appendChild(span);
     });
     return frag;
